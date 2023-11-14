@@ -1,0 +1,15 @@
+{
+  "name": "match2pay/match2pay-wc-gateway-plugin",
+  "description": "Match2Pay WooCommerce Gateway Plugin",
+  "type": "wordpress-plugin",
+  "minimum-stability": "dev",
+  "license": "GPLv2",
+  "autoload": {
+    "psr-4": {
+      "Match2Pay\\": "includes/",
+      "Match2Pay\\WooCommerce\\": "includes/WooCommerce/"
+    }
+  },
+  "require": {
+  }
+}

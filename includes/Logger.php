@@ -1,0 +1,30 @@
+<?php
+
+namespace Match2Pay;
+
+class Logger {
+
+    /**
+     * @var Logger
+     */
+    private static $instance;
+
+    public static function get_instance() {
+        if ( ! self::$instance ) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    /**
+     * Match2Pay Logger to log all the debugs
+     */
+    public function write_log( $log, $log_enabled = false ) {
+
+        if ( $log_enabled ) {
+            $logger = wc_get_logger();
+            $context = [ 'source' => 'match2pay-plugin' ];
+            $logger->info( $log, $context );
+        }
+    }
+}
