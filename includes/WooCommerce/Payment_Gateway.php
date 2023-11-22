@@ -97,7 +97,15 @@ class Payment_Gateway extends WC_Payment_Gateway {
 				'title'       => 'Description',
 				'type'        => 'textarea',
 				'description' => 'This controls the description which the user sees during checkout.',
-				'default'     => 'Pay with cryptocurrency',
+				'default'     => '',
+			),
+			'api_secret'      => array(
+				'title' => 'Live Api Secret Key',
+				'type'  => 'password'
+			),
+			'api_token'       => array(
+				'title' => 'Live Api Token Key',
+				'type'  => 'password'
 			),
 			'testmode'        => array(
 				'title'       => 'Test mode',
@@ -109,19 +117,11 @@ class Payment_Gateway extends WC_Payment_Gateway {
 			),
 			'test_api_secret' => array(
 				'title' => 'Test Api Secret Key',
-				'type'  => 'text'
+				'type'  => 'password'
 			),
 			'test_api_token'  => array(
 				'title' => 'Test Api Token Key',
 				'type'  => 'password',
-			),
-			'api_secret'      => array(
-				'title' => 'Live Api Secret Key',
-				'type'  => 'text'
-			),
-			'api_token'       => array(
-				'title' => 'Live Api Token Key',
-				'type'  => 'password'
 			),
 		);
 
@@ -141,20 +141,23 @@ class Payment_Gateway extends WC_Payment_Gateway {
 
 		$currencies = $this->get_match2pay_currencies();
 
+
+
 		foreach ( $currencies as $code => $currency ) {
-			$this->form_fields[ $code . '_enabled' ]    = array(
+			$sanitized_code = sanitize_file_name( $code );
+			$this->form_fields[ $sanitized_code . '_enabled' ]    = array(
 				'title'       => $currency['paymentCurrency'] . ' Enable/Disable',
 				'label'       => 'Enable ' . $currency['paymentCurrency'],
 				'type'        => 'checkbox',
 				'description' => 'Enable or disable ' . $currency['paymentCurrency'] . ' payments',
 				'default'     => 'no',
 			);
-			$this->form_fields[ $code . '_min_amount' ] = array(
-				'title'       => $currency['paymentCurrency'] . ' Minimum Amount',
-				'type'        => 'number',
-				'description' => 'Set minimum amount for ' . $currency['paymentCurrency'],
-				'default'     => $currency['min_amount'],
-			);
+//			$this->form_fields[ $sanitized_code . '_min_amount' ] = array(
+//				'title'       => $currency['paymentCurrency'] . ' Minimum Amount',
+//				'type'        => 'number',
+//				'description' => 'Set minimum amount for ' . $currency['paymentCurrency'],
+//				'default'     => $currency['min_amount'],
+//			);
 		}
 
 	}
@@ -210,8 +213,9 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$active_currencies = [];
 
 		foreach ( $currencies as $code => $currency ) {
+			$sanitized_code = sanitize_file_name( $code );
 			// Check if the currency is enabled in the settings
-			if ( 'yes' === $this->get_option( $code . '_enabled' ) ) {
+			if ( 'yes' === $this->get_option( $sanitized_code . '_enabled' ) ) {
 				$active_currencies[ $code ] = $currency;
 			}
 		}
@@ -266,7 +270,10 @@ class Payment_Gateway extends WC_Payment_Gateway {
 
 		// TODO ! Get this from session during process_payment order placing call.
 
+		$post_data          = $_POST;
+		$paymentGatewayName = $post_data['match2pay_currency'];
 		WC()->session->set( 'match2pay_paymentId', $payment_form_data->paymentId );
+		WC()->session->set( 'match2pay_paymentGatewayName', $paymentGatewayName );
 		WC()->session->set( 'match2pay_carts_totals_hash', $match2pay->carts_totals_hash() );
 
 		// TODO verify payment status, make sure the session's data hasn't expired yet..
@@ -392,15 +399,21 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$currencies = $this->get_active_currencies();
 		$output     = '';
 
-		$select_currency_text = __( 'Select Payment Cryptocurrency', 'wc-match2pay-crypto-payment' );
-
-		$output .= '<label>' . $select_currency_text . ' <span class="required">*</span></label>';
-		$output .= '<select id="match2pay_currency" name="match2pay_currency" class="select2" style="min-width: 150px;">';
-		$output .= '<option value="">' . __( 'Select currency', 'wc-match2pay-crypto-payment' ) . '</option>';
-		foreach ( $currencies as $code => $currency ) {
-			$output .= '<option value="' . $code . '">' . $currency['paymentCurrency'] . '</option>';
+		if ( count( $currencies ) == 1 ) {
+			$currency = array_values( $currencies )[0];
+			$output   .= '<input type="hidden" name="match2pay_currency" value="' . array_keys( $currencies )[0] . '">';
+			$output   .= '<input type="hidden" name="match2pay_currency_name" value="' . $currency['paymentCurrency'] . '">';
+		} else {
+			$select_currency_text = __( 'Select Payment Cryptocurrency', 'wc-match2pay-crypto-payment' );
+			$output               .= '<label>' . $select_currency_text . ' <span class="required">*</span></label>';
+			$output               .= '<select id="match2pay_currency" name="match2pay_currency" class="select2" style="min-width: 150px;">';
+			$output               .= '<option value="">' . __( 'Select currency', 'wc-match2pay-crypto-payment' ) . '</option>';
+			foreach ( $currencies as $code => $currency ) {
+				$output .= '<option value="' . $code . '">' . $currency['paymentCurrency'] . '</option>';
+			}
+			$output .= '</select>';
 		}
-		$output .= '</select>';
+
 		if ( $echo ) {
 			echo $output;
 		} else {
@@ -440,13 +453,16 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		if ( $session_match2pay_carts_totals_hash !== $total_cache ) {
 			WC()->session->set( 'match2pay_paymentId', null );
 			WC()->session->set( 'match2pay_carts_totals_hash', null );
+			WC()->session->set( 'match2pay_paymentGatewayName', null );
 			$paymentId = null;
 		}
 
+		$currencies = $this->get_active_currencies();
 
+		$is_single_currency_class       = count( $currencies ) === 1 ? "single-currency" : "";
 		$order_pay_checkout_class = ( is_wc_endpoint_url( 'order-pay' ) ) ? ' match2pay-order-pay' : '';
 		$order_button_text        = __( 'Pay with Cryptocurrency', 'wc-match2pay-crypto-payment' );
-		$output                   .= '<div class="match2pay-payment-setting">';
+		$output                   .= '<div class="match2pay-payment-setting ' . $is_single_currency_class . '">';
 		$output                   .= '<div class="match2pay-row">';
 		$output                   .= $this->display_currency_select( false );
 		$output                   .= '</div>';
@@ -493,6 +509,9 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$response->order_amount   = (float) $order_amount;
 		$response->order_currency = $order_currency;
 		$response->is_enough      = ( $response->final->amount >= $response->order_amount ) && $response->paymentStatus === 'COMPLETED';
+
+		$paymentGatewayName           = WC()->session->get( 'match2pay_paymentGatewayName' );
+		$response->paymentGatewayName = $paymentGatewayName ?? 'Unknown';
 
 		wp_send_json_success( $response );
 	}
@@ -600,7 +619,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 			"paymentCurrency"    => $currencies[ $paymentGatewayName ]['paymentCurrency'],
 			"callbackUrl"        => $callback_url,
 			"apiToken"           => $api_token,
-			"timestamp"          => strtotime( 'now' ),
+			"timestamp"          => time(),
 		];
 		ksort( $match2pay_data );
 

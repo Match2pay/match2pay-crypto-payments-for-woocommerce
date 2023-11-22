@@ -1,6 +1,6 @@
 const PAYMENT_ID = 'match2pay'
 const selector = '.wc_payment_method.payment_method_match2pay';
-
+const WATCHER_INTERVAL_MS = 30000
 jQuery(function ($) {
 
     // window.match2pay_displayBackupPlaceOrderBtn = function () {
@@ -254,7 +254,11 @@ jQuery(function ($) {
             return null;
         }
 
-        $('#match2pay_embedded_payment_form_btn').text('Change Currency').show();
+        if ($('[name=match2pay_currency][type=hidden]').length === 0) {
+            $('#match2pay_embedded_payment_form_btn').text('Change Currency');
+            $('#match2pay_embedded_payment_form_btn').show();
+        }
+
         $('#match2pay_embedded_payment_form_loading_txt').hide();
 
         match2pay_freeze_checkout_form();
@@ -267,6 +271,7 @@ jQuery(function ($) {
     window.match2pay_restorePayment = function () {
         const previousPayment = $('#match2pay-payment-form').data('payment-id');
         match2pay_createHiddenInputData('match2pay_paymentId', previousPayment);
+        match2pay_freeze_checkout_form();
         match2pay_displayPaymentForm();
     }
 
@@ -296,11 +301,10 @@ jQuery(function ($) {
         match2pay_getWatcherData();
         _watcher = setInterval(() => {
             match2pay_getWatcherData();
-        }, 5000)
+        }, WATCHER_INTERVAL_MS)
     }
 
     window.match2pay_watcherCallback = function (response) {
-        console.log(response)
         if (response.success === false) {
             console.log('error occured when requesting payment form data');
         }
@@ -310,9 +314,10 @@ jQuery(function ($) {
         }
 
         const data = response.data;
+        const paymentGatewayName = data.paymentGatewayName
 
         const paymentFinal = data.final.amount + ' ' + data.final.currency;
-        const transactionFinal = data.transaction.amount + ' ' + data.transaction.currency;
+        const transactionFinal = data.transaction.amount + ' ' + paymentGatewayName;
         const paymentStartedDescription = 'To make a ' + accentText(paymentFinal) + ' deposit, please send ' + accentText(transactionFinal) + ' to the address below.'
         const paymentAddress = data.walletAddress;
         let paymentStatus = data.paymentStatus;
@@ -348,6 +353,12 @@ jQuery(function ($) {
             $details.append('<p>' + paymentStartedDescription + '</p>')
         }
 
+        const formatRate = (rate) => {
+            return parseFloat(rate).toFixed(4)
+        }
+
+        const conversionRate = formatRate(data.conversionRate)
+
         if (paymentStatus === 'PENDING' && data.transactions) {
             const receivedConfirmations = data.transactions.confirmationOfTheLastTransaction.receivedConfirmations
             const requiredConfirmations = data.transactions.confirmationOfTheLastTransaction.requiredConfirmations
@@ -367,6 +378,7 @@ jQuery(function ($) {
 
         $details.append('<p class="match2pay-wallet-address">' + paymentAddress + '<img alt="copy" src="' + copyIcon + '"></p>')
         $details.append('<p class="' + paymentStatus + '">' + statusText[paymentStatus] + '</p>')
+        $details.append('<p class="match2pay-payment-conversion-rate">1 ' + paymentGatewayName + ' = ' + conversionRate + ' USD' + '</p>')
         $details.append('<p class="match2pay-payment-notice">Please pay the exact amount. Avoid paying from a crypto exchange, use your personal wallet.</p>')
         paymentStatusElement.innerHTML = $details[0].outerHTML;
 
@@ -376,7 +388,7 @@ jQuery(function ($) {
     }
 
     function paymentMethodAction() {
-        if ($('#match2pay_currency') && $('#match2pay_currency').select2){
+        if ($('#match2pay_currency[type=select]') && $('#match2pay_currency').select2) {
             $('#match2pay_currency').select2()
         }
 
@@ -392,7 +404,7 @@ jQuery(function ($) {
         }
 
         const previousPayment = $('#match2pay-payment-form').data('payment-id');
-        if (previousPayment){
+        if (previousPayment) {
             match2pay_restorePayment();
         }
     }
