@@ -294,7 +294,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		);
 	}
 
-	public function match2pay_start_checkout() {
+	public static function match2pay_start_checkout() {
 		$self = new Payment_Gateway();
 		$self->logger->write_log( 'match2pay_start_checkout() called.', $self->debugLog );
 
