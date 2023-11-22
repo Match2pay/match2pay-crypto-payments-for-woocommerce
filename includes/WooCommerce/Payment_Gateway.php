@@ -40,7 +40,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		if ( $this->testmode ) {
 			$this->api_base_url = 'https://pp-staging.fx-edge.com/';
 		} else {
-			$this->api_base_url = 'https://fx-edge.com/';
+			$this->api_base_url = 'https://m2p2.match-trade.com/';
 		}
 
 		$this->api_token  = $this->testmode ? $this->get_option( 'test_api_token' ) : $this->get_option( 'api_token' );
