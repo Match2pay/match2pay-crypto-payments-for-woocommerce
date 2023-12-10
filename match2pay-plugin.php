@@ -52,8 +52,25 @@ final class WC_Match2Pay_Crypto_Payment {
     public function init_plugin(): void {
         new \Match2Pay\Assets();
         new \Match2Pay\Match2Pay_Hooks();
+	    add_action( 'init', [ $this, 'register_order_status'] );
         add_filter( 'woocommerce_payment_gateways', [ $this, 'match2pay_wc_add_gateway_class' ] );
+	    add_filter( 'wc_order_statuses', [ $this,'add_order_statuses' ]);
     }
+
+	public function register_order_status() {
+		register_post_status( 'wc-partially-paid', array(
+			'label'                     => 'Partially Paid',
+			'public'                    => true,
+			'exclude_from_search'       => false,
+			'show_in_admin_all_list'    => true,
+			'show_in_admin_status_list' => true,
+			'label_count'               => _n_noop( 'Partially Paid (%s)', 'Partially Paid (%s)' )
+		) );
+	}
+	public function add_order_statuses( $order_statuses ) {
+		$order_statuses['wc-partially-paid'] = _x( 'Partially Paid', 'Order status', 'woocommerce' );
+		return $order_statuses;
+	}
 
     public function match2pay_wc_add_gateway_class( $gateways ) {
         $gateways[] = new Match2Pay\WooCommerce\Payment_Gateway();

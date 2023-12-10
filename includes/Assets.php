@@ -1,6 +1,7 @@
 <?php
 
 namespace Match2Pay;
+use Match2Pay\WooCommerce\Payment_Gateway;
 
 class Assets {
 	function __construct() {
@@ -20,5 +21,30 @@ class Assets {
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'assets_base' => WC_MATCH2PAY_ASSETS,
 		) );
+
+		$this->payment_scripts();
+	}
+
+	public function payment_scripts() {
+
+		$match2pay = new Payment_Gateway();
+		if ( ! is_cart() && ! is_checkout() && ! isset( $_GET['pay_for_order'] ) ) {
+			return;
+		}
+
+		if ( 'no' === $match2pay->enabled ) {
+			return;
+		}
+
+		if ( empty( $match2pay->api_token ) || empty( $match2pay->api_secret ) ) {
+			return;
+		}
+
+		if ( ! $match2pay->testmode && ! is_ssl() ) {
+			return;
+		}
+
+		wp_enqueue_script( 'woocommerce_match2pay' );
+		wp_enqueue_script( 'woocommerce_match2pay_qrcode' );
 	}
 }

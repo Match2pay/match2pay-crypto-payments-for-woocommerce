@@ -50,32 +50,8 @@ class Payment_Gateway extends WC_Payment_Gateway {
 			$this,
 			'process_admin_options'
 		) );
-
-		add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
 	}
 
-
-	public function payment_scripts() {
-
-		if ( ! is_cart() && ! is_checkout() && ! isset( $_GET['pay_for_order'] ) ) {
-			return;
-		}
-
-		if ( 'no' === $this->enabled ) {
-			return;
-		}
-
-		if ( empty( $this->api_token ) || empty( $this->api_secret ) ) {
-			return;
-		}
-
-		if ( ! $this->testmode && ! is_ssl() ) {
-			return;
-		}
-
-		wp_enqueue_script( 'woocommerce_match2pay' );
-		wp_enqueue_script( 'woocommerce_match2pay_qrcode' );
-	}
 
 	public function init_form_fields() {
 		$this->form_fields = array(
@@ -142,14 +118,13 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$currencies = $this->get_match2pay_currencies();
 
 
-
 		foreach ( $currencies as $code => $currency ) {
-			$sanitized_code = sanitize_file_name( $code );
-			$this->form_fields[ $sanitized_code . '_enabled' ]    = array(
-				'title'       => $currency['paymentCurrency'] . ' Enable/Disable',
-				'label'       => 'Enable ' . $currency['paymentCurrency'],
+			$sanitized_code                                    = sanitize_file_name( $code );
+			$this->form_fields[ $sanitized_code . '_enabled' ] = array(
+				'title'       => $code . ' Enable/Disable',
+				'label'       => 'Enable ' . $code,
 				'type'        => 'checkbox',
-				'description' => 'Enable or disable ' . $currency['paymentCurrency'] . ' payments',
+				'description' => 'Enable or disable ' . $code . ' payments',
 				'default'     => 'no',
 			);
 //			$this->form_fields[ $sanitized_code . '_min_amount' ] = array(
@@ -273,6 +248,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$post_data          = $_POST;
 		$paymentGatewayName = $post_data['match2pay_currency'];
 		WC()->session->set( 'match2pay_paymentId', $payment_form_data->paymentId );
+		WC()->session->set( 'match2pay_walletAddress', $payment_form_data->address );
 		WC()->session->set( 'match2pay_paymentGatewayName', $paymentGatewayName );
 		WC()->session->set( 'match2pay_carts_totals_hash', $match2pay->carts_totals_hash() );
 
@@ -409,7 +385,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 			$output               .= '<select id="match2pay_currency" name="match2pay_currency" class="select2" style="min-width: 150px;">';
 			$output               .= '<option value="">' . __( 'Select currency', 'wc-match2pay-crypto-payment' ) . '</option>';
 			foreach ( $currencies as $code => $currency ) {
-				$output .= '<option value="' . $code . '">' . $currency['paymentCurrency'] . '</option>';
+				$output .= '<option value="' . $code . '">' . $code . '</option>';
 			}
 			$output .= '</select>';
 		}
@@ -459,7 +435,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 
 		$currencies = $this->get_active_currencies();
 
-		$is_single_currency_class       = count( $currencies ) === 1 ? "single-currency" : "";
+		$is_single_currency_class = count( $currencies ) === 1 ? "single-currency" : "";
 		$order_pay_checkout_class = ( is_wc_endpoint_url( 'order-pay' ) ) ? ' match2pay-order-pay' : '';
 		$order_button_text        = __( 'Pay with Cryptocurrency', 'wc-match2pay-crypto-payment' );
 		$output                   .= '<div class="match2pay-payment-setting ' . $is_single_currency_class . '">';
@@ -644,12 +620,16 @@ class Payment_Gateway extends WC_Payment_Gateway {
 	}
 
 	public function process_payment( $order_id ) {
+		return;
 		$order  = wc_get_order( $order_id );
 		$amount = $order->get_total();
 
-		$paymentId        = $_POST['match2pay_paymentId'];
-		$sessionPaymentId = WC()->session->get( 'match2pay_paymentId' );
+		$paymentId               = $_POST['match2pay_paymentId'];
+		$sessionPaymentId        = WC()->session->get( 'match2pay_paymentId' );
+		$match2pay_walletAddress = WC()->session->get( 'match2pay_walletAddress' );
 		$order->update_meta_data( 'match2pay_paymentId', $paymentId );
+		$order->update_meta_data( 'match2pay_walletAddress', $match2pay_walletAddress );
+		$order->save();
 
 		if ( $paymentId !== $sessionPaymentId ) {
 			$order->set_status( 'failed' );
@@ -677,7 +657,8 @@ class Payment_Gateway extends WC_Payment_Gateway {
 			$order->payment_complete();
 			$order->reduce_order_stock();
 		} else {
-			$order->set_status( 'failed' );
+			$order->set_status( 'wc-partially-paid' );
+			$order->save();
 		}
 
 		return array(
@@ -738,29 +719,28 @@ class Payment_Gateway extends WC_Payment_Gateway {
 			$this->logger->write_log( json_encode( $results ) );
 			$this->logger->write_log( json_encode( $order->get_status() ) );
 
-			if ( $callback_data['status'] !== 'DONE' ) {
+			if ( $order->get_status() === 'completed' || $order->get_status() === 'processing' ) {
 				return;
 			}
 
-			if ( $order->get_status() === 'pending' ) {
-
-				//TODO: refactor formatting
-				if ( ! strpos( $callback_data['transactionAmount'], '.' ) ) {
-					$callback_data['transactionAmount'] = "{$callback_data['transactionAmount']}.00000000";
-				} elseif ( strlen( explode( '.', $callback_data['transactionAmount'] )[1] ) < 8 ) {
-					$callback_data['transactionAmount'] = $callback_data['transactionAmount'] . str_pad( '', 8 - strlen( explode( '.', $callback_data['transactionAmount'] )[1] ), '0' );
-				}
-
-				$order_amount = $order->get_total();
-				$order_amount = apply_filters( 'wc_match2pay_order_amount', $order_amount, $order->get_currency(), $order->get_id() );
-
-				if ( $callback_data['finalAmount'] >= $order_amount ) {
-					$order->payment_complete();
-					wc_reduce_stock_levels( $order->get_id() );
-				}
-			} else {
-				$this->logger->write_log( 'Order status is not pending', $this->debugLog );
+			//TODO: refactor formatting
+			if ( ! strpos( $callback_data['transactionAmount'], '.' ) ) {
+				$callback_data['transactionAmount'] = "{$callback_data['transactionAmount']}.00000000";
+			} elseif ( strlen( explode( '.', $callback_data['transactionAmount'] )[1] ) < 8 ) {
+				$callback_data['transactionAmount'] = $callback_data['transactionAmount'] . str_pad( '', 8 - strlen( explode( '.', $callback_data['transactionAmount'] )[1] ), '0' );
 			}
+
+			$order_amount = $order->get_total();
+			$order_amount = apply_filters( 'wc_match2pay_order_amount', $order_amount, $order->get_currency(), $order->get_id() );
+			$this->logger->write_log( 'Order amount: ' . $order_amount );
+			$this->logger->write_log( 'Order amount anought: ' . $callback_data['finalAmount'] >= $order_amount );
+			if ( $callback_data['finalAmount'] >= $order_amount ) {
+				$order->payment_complete();
+				wc_reduce_stock_levels( $order->get_id() );
+			} else {
+				$order->update_status( 'wc-partially-paid' );
+			}
+
 			$this->remove_payment_response( $paymentId );
 		} catch ( \Exception $e ) {
 			var_dump( $e->getMessage() );

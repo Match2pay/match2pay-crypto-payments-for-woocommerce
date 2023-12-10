@@ -19,12 +19,13 @@ class Logger {
     /**
      * Match2Pay Logger to log all the debugs
      */
-    public function write_log( $log, $log_enabled = false ) {
+    public function write_log( $log, $log_enabled = true ) {
 
         if ( $log_enabled ) {
             $logger = wc_get_logger();
             $context = [ 'source' => 'match2pay-plugin' ];
             $logger->info( $log, $context );
         }
+		error_log( print_r( $log, true));
     }
 }

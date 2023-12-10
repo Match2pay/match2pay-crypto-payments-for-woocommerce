@@ -3,24 +3,17 @@ const selector = '.wc_payment_method.payment_method_match2pay';
 const WATCHER_INTERVAL_MS = 30000
 jQuery(function ($) {
 
-    // window.match2pay_displayBackupPlaceOrderBtn = function () {
-    //
-    //     if (document.getElementById('match2pay_place_order_form_expired_btn')) {
-    //         return;
-    //     }
-    //
-    //     const iframeNode = document.getElementById('match2pay_embedded_payment_form_iframe');
-    //
-    //     iframeNode.insertAdjacentHTML("afterend",
-    //         '<p style="text-align: center;padding: 10px 5px 15px;font-size: 90%;">It will be updated automatically once payment is detected.</p>'
-    //     );
-    //     iframeNode.insertAdjacentHTML("afterend",
-    //         '<button id="match2pay_place_order_form_expired_btn" onclick="match2pay_submitForm()" type="button" class="button alt" style="margin: 0 auto;display: block;">Place order anyway</button>'
-    //     );
-    //     iframeNode.insertAdjacentHTML("afterend",
-    //         '<p style="text-align: center;padding: 25px 5px 15px;">Did the form not detect your payment in time?</p>'
-    //     );
-    // }
+    function showPlaceOrderButton(forceText = false) {
+        $('#place_order').css('opacity', 1.0);
+        $('#place_order').css('visibility', 'initial');
+        if (forceText) {
+            $('#place_order').text(forceText);
+        }
+    }
+    function hidePlaceOrderButton() {
+        $('#place_order').css('opacity', 0.25);
+        $('#place_order').css('visibility', 'hidden');
+    }
 
     window.match2pay_submitForm = function (delay = 1500) {
         $('#place_order').css('opacity', 1.0);
@@ -374,6 +367,7 @@ jQuery(function ($) {
         if (paymentStatus === 'COMPLETED' && data.is_enough === false) {
             paymentStatus = 'NOT_ENOUGH'
             $details.append('<p>' + paymentStartedDescription + '</p>')
+            showPlaceOrderButton("Place Order anyway");
         }
 
         $details.append('<p class="match2pay-wallet-address">' + paymentAddress + '<img alt="copy" src="' + copyIcon + '"></p>')
@@ -393,14 +387,11 @@ jQuery(function ($) {
         }
 
         if ($('form[name="checkout"] input[name="payment_method"]:checked').val() === PAYMENT_ID) {
-            $('#place_order').css('opacity', 0.25);
-            $('#place_order').css('visibility', 'hidden');
+            hidePlaceOrderButton();
         } else if ($('#order_review input[name="payment_method"]:checked').val() === PAYMENT_ID) {
-            $('#place_order').css('opacity', 0.25);
-            $('#place_order').css('visibility', 'hidden');
+            hidePlaceOrderButton();
         } else {
-            $('#place_order').css('opacity', 1.0);
-            $('#place_order').css('visibility', 'initial');
+            showPlaceOrderButton();
         }
 
         const previousPayment = $('#match2pay-payment-form').data('payment-id');
