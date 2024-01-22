@@ -2,7 +2,7 @@
   "name": "match2pay-crypto-payments-for-woocommerce",
   "title": "Match2Pay Crypto Payments for WooCommerce",
   "license": "GPL-3.0-or-later",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Accept Bitcoin, USDT i.e. TRC20, Ethereum, Litecoin, Ripple, Dogecoin and other Cryptocurrencies via Match2pay on your WooCommerce store.",
   "scripts": {
     "build": "wp-scripts build",
