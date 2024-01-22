@@ -1,9 +1,9 @@
 {
-  "name": "match2pay/match2pay-wc-gateway-plugin",
-  "description": "Match2Pay WooCommerce Gateway Plugin",
+  "name": "match2pay/match2pay-crypto-payments-for-woocommerce",
+  "description": "Match2Pay Crypto Payments for WooCommerce",
   "type": "wordpress-plugin",
   "minimum-stability": "dev",
-  "license": "GPLv2",
+  "license": "GPLv3",
   "autoload": {
     "psr-4": {
       "Match2Pay\\": "includes/",
