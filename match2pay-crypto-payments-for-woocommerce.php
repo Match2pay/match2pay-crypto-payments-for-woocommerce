@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once __DIR__ . '/vendor/autoload.php';
 
 final class WC_Match2Pay_Crypto_Payment {
-	public const version = '1.0.0';
+	public const version = '1.0.2';
 
 	private function __construct() {
 		$this->define_constants();
