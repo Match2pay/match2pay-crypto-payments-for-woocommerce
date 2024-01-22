@@ -5,7 +5,7 @@
  * Description: Accept Bitcoin, USDT i.e. TRC20, Ethereum, Litecoin, Ripple, Dogecoin and other Cryptocurrencies via Match2pay on your WooCommerce store.
  * Author: Match2Pay
  * Author URI:
- * Version: 1.0.0
+ * Version: 1.0.4
  * Requires at least: 5.5
  * Tested up to: 6.4
  */
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once __DIR__ . '/vendor/autoload.php';
 
 final class WC_Match2Pay_Crypto_Payment {
-	public const version = '1.0.3';
+	public const version = '1.0.4';
 
 	private function __construct() {
 		$this->define_constants();
