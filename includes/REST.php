@@ -69,13 +69,14 @@ class REST {
 		$callback_signature = $request->get_header( 'signature' );
 		$this->logger->write_log( 'webhook_update(): $paymentId. ' . $paymentId, $debugLoged );
 
-		$results = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}wc_orders_meta WHERE meta_value = '{$paymentId}' AND meta_key = 'match2pay_paymentId'" );
-		if ( ! $results ) {
-			$this->logger->write_log( 'webhook_update(): $results is null. ' . json_encode( $results ), $debugLoged );
+		$order_id = $match2pay->get_order_by_payment_id($paymentId);
 
+		if ( ! $order_id ) {
+			$this->logger->write_log( 'webhook_update(): $order_id is null. ' . json_encode( $order_id ), $debugLoged );
 			return;
 		}
-		$order = wc_get_order( $results->order_id );
+
+		$order = wc_get_order( $order_id );
 		$order->update_meta_data( 'match2pay_callback', $request->get_body() );
 
 		$signatureStr = "{$transactionAmount}{$transactionCurrency}{$paymentStatus}{$api_token}{$api_secret}";

@@ -11,5 +11,6 @@
     }
   },
   "require": {
+    "appsero/client": "dev-develop"
   }
 }

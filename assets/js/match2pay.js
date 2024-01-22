@@ -1,7 +1,9 @@
 const PAYMENT_ID = 'match2pay'
 const selector = '.wc_payment_method.payment_method_match2pay';
 const WATCHER_INTERVAL_MS = 30000
+
 jQuery(function ($) {
+    const isPayForOrderForm = window.location.href.indexOf('pay_for_order') !== -1;
 
     function showPlaceOrderButton(forceText = false) {
         $('#place_order').css('opacity', 1.0);
@@ -122,30 +124,26 @@ jQuery(function ($) {
         $('#match2pay_embedded_payment_form_btn').hide();
         $('#match2pay_embedded_payment_form_loading_txt').show();
 
-        console.log('match2pay_validateCheckout', elem)
         if (elem.classList.contains('match2pay-order-pay')) {
-
-            let url = match2pay_object.ajax_url + '?action=match2pay_orderpay_payment_request';
-            let data = 'orderid=' + elem.dataset.id;
+            let callback = match2pay_getPaymentFormDataCallback;
+            let url = match2pay_params.ajax_url + '?action=match2pay_orderpay_payment_request';
+            let data = $(selector).closest('form').serialize();
+            data += '&order_id=' + elem.dataset.id;
+            console.log(data)
+            // let data = 'order_id=' + elem.dataset.id;
 
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("POST", url, false); // false for synchronous request
             xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xmlHttp.send(data);
-
+            try {
+                var response = JSON.parse(xmlHttp.responseText);
+            } catch (err) {
+                console.warn(err.message + " in " + xmlHttp.responseText, err);
+                return;
+            }
+            callback(response);
             if (xmlHttp.responseText != null) {
-                let iFrameUrlforOrderPay = xmlHttp.responseText;
-                let hiddenInput;
-
-                hiddenInput = document.createElement("input");
-                hiddenInput.setAttribute("id", 'match2pay_embedded_payment_form_url');
-                hiddenInput.setAttribute("name", 'match2pay_embedded_payment_form_url');
-                hiddenInput.setAttribute("type", "hidden");
-                hiddenInput.value = iFrameUrlforOrderPay;
-
-                // Find checkout form, append input to the form
-                let orderReviewForm = document.getElementById('order_review');
-                orderReviewForm.appendChild(hiddenInput);
                 match2pay_displayPaymentForm();
             } else {
                 alert('Something went wrong');
@@ -253,18 +251,20 @@ jQuery(function ($) {
         }
 
         $('#match2pay_embedded_payment_form_loading_txt').hide();
-
-        match2pay_freeze_checkout_form();
+        if (!isPayForOrderForm) {
+            match2pay_freeze_checkout_form();
+        }
 
         match2pay_createHiddenInputData('match2pay_paymentId', response.payment_form_data.paymentId);
-
         match2pay_displayPaymentForm();
     }
 
     window.match2pay_restorePayment = function () {
         const previousPayment = $('#match2pay-payment-form').data('payment-id');
         match2pay_createHiddenInputData('match2pay_paymentId', previousPayment);
-        match2pay_freeze_checkout_form();
+        if (!isPayForOrderForm){
+            match2pay_freeze_checkout_form();
+        }
         match2pay_displayPaymentForm();
     }
 
@@ -282,7 +282,14 @@ jQuery(function ($) {
             hiddenInput.value = inputValue;
 
             let checkoutForm = document.getElementsByClassName('checkout woocommerce-checkout')['checkout'];
-            checkoutForm.appendChild(hiddenInput);
+            if (checkoutForm){
+                checkoutForm.appendChild(hiddenInput);
+            }
+
+            let orderReviewForm = document.getElementById('order_review');
+            if (orderReviewForm){
+                orderReviewForm.appendChild(hiddenInput);
+            }
         }
     }
     let _watcher = null
@@ -302,79 +309,32 @@ jQuery(function ($) {
             console.log('error occured when requesting payment form data');
         }
 
-        const accentText = (text) => {
-            return '<span class="match2pay-accent">' + text + '</span>';
+        const data = response.data;
+
+        if (data.result === 'success' && data.redirect){
+            window.location.href = data.redirect;
+            return;
         }
 
-        const data = response.data;
-        const paymentGatewayName = data.paymentGatewayName
-
-        const paymentFinal = data.final.amount + ' ' + data.final.currency;
-        const transactionFinal = data.transaction.amount + ' ' + paymentGatewayName;
-        const paymentStartedDescription = 'To make a ' + accentText(paymentFinal) + ' deposit, please send ' + accentText(transactionFinal) + ' to the address below.'
-        const paymentAddress = data.walletAddress;
-        let paymentStatus = data.paymentStatus;
-
-        const paymentStatusElement = document.getElementById('match2pay-details');
-
-        const $details = $('<div class="match2pay-payment-details"></div>')
-
-        const canvas = $('#match2pay-qr')
-        if (canvas.data('address') !== paymentAddress) {
-            canvas.empty();
-            const qrcode = new QRCode(canvas[0], {
-                text: paymentAddress,
+        const $canvas = $('#match2pay-qr')
+        if ($canvas.data('address') !== data.walletAddress) {
+            $canvas.empty();
+            const qrcode = new QRCode($canvas[0], {
+                text: data.walletAddress,
                 width: 256,
                 height: 256,
                 colorDark: "#000000",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
             });
-        }
-        canvas.data('address', paymentAddress)
-
-        const copyIcon = match2pay_params.assets_base + '/img/copy-outline-icon.svg'
-
-        const statusText = {
-            'STARTED': 'Waiting for payment',
-            'PENDING': 'Waiting for confirmations',
-            'COMPLETED': 'Payment completed',
-            'NOT_ENOUGH': 'Not enough funds',
+            $canvas.data('address', data.walletAddress)
         }
 
-        if (paymentStatus === 'STARTED') {
-            $details.append('<p>' + paymentStartedDescription + '</p>')
-        }
+        let paymentStatus = data.paymentStatus;
 
-        const formatRate = (rate) => {
-            return parseFloat(rate).toFixed(4)
-        }
+        const paymentStatusElement = document.getElementById('match2pay-details');
 
-        const conversionRate = formatRate(data.conversionRate)
-
-        if (paymentStatus === 'PENDING' && data.transactions) {
-            const receivedConfirmations = data.transactions.confirmationOfTheLastTransaction.receivedConfirmations
-            const requiredConfirmations = data.transactions.confirmationOfTheLastTransaction.requiredConfirmations
-            const paymentPendingDescription = "We have received " + receivedConfirmations + " confirmations of " + requiredConfirmations + " required.<br/> Please wait for the transaction to be confirmed."
-            $details.append('<p>' + paymentPendingDescription + '</p>')
-        }
-
-        if (paymentStatus === 'COMPLETED' && data.transaction.amount <= 0) {
-            const paymentDoneDescription = 'Payment completed.'
-            $details.append('<p>' + paymentDoneDescription + '</p>')
-        }
-
-        if (paymentStatus === 'COMPLETED' && data.is_enough === false) {
-            paymentStatus = 'NOT_ENOUGH'
-            $details.append('<p>' + paymentStartedDescription + '</p>')
-            showPlaceOrderButton("Place Order anyway");
-        }
-
-        $details.append('<p class="match2pay-wallet-address">' + paymentAddress + '<img alt="copy" src="' + copyIcon + '"></p>')
-        $details.append('<p class="' + paymentStatus + '">' + statusText[paymentStatus] + '</p>')
-        $details.append('<p class="match2pay-payment-conversion-rate">1 ' + paymentGatewayName + ' = ' + conversionRate + ' USD' + '</p>')
-        $details.append('<p class="match2pay-payment-notice">Please pay the exact amount. Avoid paying from a crypto exchange, use your personal wallet.</p>')
-        paymentStatusElement.innerHTML = $details[0].outerHTML;
+        paymentStatusElement.innerHTML = data.fragment;
 
         if (paymentStatus === 'COMPLETED') {
             match2pay_submitForm();

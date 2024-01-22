@@ -12,6 +12,10 @@ class ComposerStaticInitbcc7842ec3b3d467ae1bbd82555a7ab0
             'Match2Pay\\WooCommerce\\' => 22,
             'Match2Pay\\' => 10,
         ),
+        'A' => 
+        array (
+            'Appsero\\' => 8,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -22,6 +26,10 @@ class ComposerStaticInitbcc7842ec3b3d467ae1bbd82555a7ab0
         'Match2Pay\\' => 
         array (
             0 => __DIR__ . '/../..' . '/includes',
+        ),
+        'Appsero\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/appsero/client/src',
         ),
     );
 

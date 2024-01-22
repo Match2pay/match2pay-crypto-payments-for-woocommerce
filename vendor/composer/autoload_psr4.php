@@ -8,4 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'Match2Pay\\WooCommerce\\' => array($baseDir . '/includes/WooCommerce'),
     'Match2Pay\\' => array($baseDir . '/includes'),
+    'Appsero\\' => array($vendorDir . '/appsero/client/src'),
 );

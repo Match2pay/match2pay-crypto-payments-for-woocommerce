@@ -1,0 +1,27 @@
+{
+  "name": "match2pay-crypto-payments-for-woocommerce",
+  "title": "Match2Pay Crypto Payments for WooCommerce",
+  "license": "GPL-3.0-or-later",
+  "version": "1.0.0",
+  "description": "Accept Bitcoin, USDT i.e. TRC20, Ethereum, Litecoin, Ripple, Dogecoin and other Cryptocurrencies via Match2pay on your WooCommerce store.",
+  "scripts": {
+    "build": "wp-scripts build",
+    "check-engines": "wp-scripts check-engines",
+    "check-licenses": "wp-scripts check-licenses",
+    "format:js": "wp-scripts format-js",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "lint:md:docs": "wp-scripts lint-md-docs",
+    "lint:md:js": "wp-scripts lint-md-js",
+    "lint:pkg-json": "wp-scripts lint-pkg-json",
+    "packages-update": "wp-scripts packages-update",
+    "start": "wp-scripts start",
+    "test:e2e": "wp-scripts test-e2e",
+    "test:unit": "wp-scripts test-unit-js"
+  },
+  "devDependencies": {
+    "@woocommerce/dependency-extraction-webpack-plugin": "2.3.0",
+    "@woocommerce/eslint-plugin": "2.2.0",
+    "@wordpress/scripts": "^27.0.0"
+  }
+}
