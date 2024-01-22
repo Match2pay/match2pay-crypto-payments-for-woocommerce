@@ -10,7 +10,7 @@ class Assets {
 	}
 
 	public function register_assets() {
-		wp_register_script( 'woocommerce_match2pay_qrcode', "https://cdn.jsdelivr.net/npm/qrcode-js-package@1.0.4/qrcode.min.js" );
+		wp_register_script( 'woocommerce_match2pay_qrcode', WC_MATCH2PAY_ASSETS . '/js/vendor/qrcode.min.js', array(), '1.0.4' );
 		wp_register_style( 'woocommerce_match2pay', WC_MATCH2PAY_ASSETS . '/css/styles.css', array() );
 		wp_enqueue_style( 'woocommerce_match2pay');
 		wp_register_script( 'woocommerce_match2pay', WC_MATCH2PAY_ASSETS . '/js/match2pay.js', array(
