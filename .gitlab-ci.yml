@@ -1,6 +1,9 @@
 variables:
   DEPLOY_EXTERNAL_GIT_SOURCE_BRANCH: "devel"
 
+stages:
+  - deploy
+
 deploy_to_external_git:
   image:
     name: docker:git
