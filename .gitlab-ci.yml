@@ -1,0 +1,24 @@
+variables:
+  DEPLOY_EXTERNAL_GIT_SOURCE_BRANCH: "devel"
+
+deploy_to_external_git:
+  image:
+    name: docker:git
+  stage: deploy
+  tags:
+    - ukrosoft
+  rules:
+    - if: $DEPLOY_EXTERNAL_GIT_ENABLED != "true" || $CI_COMMIT_REF_NAME != $DEPLOY_EXTERNAL_GIT_SOURCE_BRANCH
+      when: never
+    - if: $DEPLOY_EXTERNAL_GIT_ENABLED == "true" && $CI_COMMIT_REF_NAME == $DEPLOY_EXTERNAL_GIT_SOURCE_BRANCH
+      when: always
+  before_script: []
+  script:
+    - mkdir -p ~/.ssh
+    - echo "$DEPLOY_EXTERNAL_GIT_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H "$DEPLOY_EXTERNAL_GIT_HOST" >> ~/.ssh/known_hosts
+    - git config user.email "$DEPLOY_EXTERNAL_GIT_EMAIL"
+    - git config user.name "$DEPLOY_EXTERNAL_GIT_NAME"
+    - git remote add origin-external git@$DEPLOY_EXTERNAL_GIT_HOST:$DEPLOY_EXTERNAL_GIT_PATH
+    - git push origin-external HEAD:$DEPLOY_EXTERNAL_GIT_BRANCH
