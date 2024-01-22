@@ -20,11 +20,18 @@ final class WC_Match2Pay_Crypto_Payment {
 	public const version = '1.0.4';
 
 	private function __construct() {
-		$this->define_constants();
-		$this->check_older_version();
+		$plugin_path = trailingslashit( WP_PLUGIN_DIR ) . 'woocommerce/woocommerce.php';
+		if (
+			in_array( $plugin_path, wp_get_active_and_valid_plugins() )
+			|| in_array( $plugin_path, wp_get_active_network_plugins() )
+		) {
+			$this->define_constants();
+			$this->check_older_version();
 
-		register_activation_hook( __FILE__, [ $this, 'activate' ] );
-		add_action( 'plugins_loaded', [ $this, 'init_plugin' ] );
+			register_activation_hook( __FILE__, [ $this, 'activate' ] );
+			add_action( 'plugins_loaded', [ $this, 'init_plugin' ] );
+		}
+
 	}
 
 	private function define_constants(): void {
