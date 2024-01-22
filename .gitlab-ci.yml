@@ -24,4 +24,4 @@ deploy_to_external_git:
     - git config user.email "$DEPLOY_EXTERNAL_GIT_EMAIL"
     - git config user.name "$DEPLOY_EXTERNAL_GIT_NAME"
     - git remote add origin-external git@$DEPLOY_EXTERNAL_GIT_HOST:$DEPLOY_EXTERNAL_GIT_PATH
-    - git push origin-external HEAD:$DEPLOY_EXTERNAL_GIT_BRANCH
+    - git push origin-external HEAD:$DEPLOY_EXTERNAL_GIT_BRANCH --tags
