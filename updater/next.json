@@ -1,0 +1,24 @@
+{
+  "name" : "Match2pay crypto payments for WooCommerce",
+  "slug" : "match2pay-crypto-payments-for-woocommerce",
+  "author" : "<a href='https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce'>Match2pay crypto payments for WooCommerce</a>",
+  "author_profile" : "https://profiles.wordpress.org/Match2pay",
+  "donate_link" : "https://github.com/sponsors/",
+  "version" : "1.1.0-next.1",
+  "download_url" : "https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/releases/download/v1.1.0-next.1/match2pay-crypto-payments-for-woocommerce.zip",
+  "requires" : "5.5",
+  "tested" : "6.4",
+  "requires_php" : "7.4",
+  "added" : "2024-01-01 00:00:00",
+  "last_updated" : "2024-03-11 08:13:46",
+  "homepage" : "https://match2pay.com",
+  "sections" : {
+    "description" : "Accept Bitcoin, USDT i.e. TRC20, Ethereum, Litecoin, Ripple, Dogecoin and other Cryptocurrencies via Match2pay on your WooCommerce store.",
+    "installation" : "__INSTALLATION__",
+    "changelog" : "__CHANGELOG__"
+  },
+  "banners" : {
+    "low" : "https://raw.githubusercontent.com/Match2pay/match2pay-crypto-payments-for-woocommerce/next/updater/assets/banner-low.jpg",
+    "high" : "https://raw.githubusercontent.com/Match2pay/match2pay-crypto-payments-for-woocommerce/next/updater/assets/banner.jpg"
+  }
+}

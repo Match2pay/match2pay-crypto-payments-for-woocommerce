@@ -1,11 +1,11 @@
 <?php return array(
     'root' => array(
-        'name' => 'match2pay/match2pay-wc-gateway-plugin',
+        'name' => 'match2pay/match2pay-crypto-payments-for-woocommerce',
         'pretty_version' => '1.0.0+no-version-set',
         'version' => '1.0.0.0',
         'reference' => NULL,
         'type' => 'wordpress-plugin',
-        'install_path' => __DIR__ . '/../../',
+        'install_path' => __DIR__ . '/../../../',
         'aliases' => array(),
         'dev' => true,
     ),
@@ -21,12 +21,12 @@
             ),
             'dev_requirement' => false,
         ),
-        'match2pay/match2pay-wc-gateway-plugin' => array(
+        'match2pay/match2pay-crypto-payments-for-woocommerce' => array(
             'pretty_version' => '1.0.0+no-version-set',
             'version' => '1.0.0.0',
             'reference' => NULL,
             'type' => 'wordpress-plugin',
-            'install_path' => __DIR__ . '/../../',
+            'install_path' => __DIR__ . '/../../../',
             'aliases' => array(),
             'dev_requirement' => false,
         ),

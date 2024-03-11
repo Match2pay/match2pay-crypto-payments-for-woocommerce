@@ -5,19 +5,29 @@
  * Description: Accept Bitcoin, USDT i.e. TRC20, Ethereum, Litecoin, Ripple, Dogecoin and other Cryptocurrencies via Match2pay on your WooCommerce store.
  * Author: Match2Pay
  * Author URI:
- * Version: 1.0.4
+ * Text Domain: wc-match2pay-crypto-payment
+ * Version: 1.1.0-next.1
  * Requires at least: 5.5
- * Tested up to: 6.4
+ * Tested up to: 6.4.2
+ *
+ * WC requires at least: 7.0
+ * WC tested up to: 8.5.1
+ *
+ * License: GNU General Public License v3.0
+ * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/includes/vendor/autoload.php';
+
+define( 'WC_MATCH2PAY_VERSION', '1.1.0-next.1' );
+define( 'WC_MATCH2PAY_UPDATER_URL', 'https://raw.githubusercontent.com/Match2pay/match2pay-crypto-payments-for-woocommerce/next/updater/next.json' );
 
 final class WC_Match2Pay_Crypto_Payment {
-	public const version = '1.0.4';
+	public const version = WC_MATCH2PAY_VERSION;
 
 	private function __construct() {
 		$plugin_path = trailingslashit( WP_PLUGIN_DIR ) . 'woocommerce/woocommerce.php';
@@ -36,11 +46,11 @@ final class WC_Match2Pay_Crypto_Payment {
 
 	private function define_constants(): void {
 		define( 'MATCH2PAY_ID', "match2pay" );
-		define( 'WC_MATCH2PAY_VERSION', self::version );
+        define( 'WC_MATCH2PAY_DEV_MODE', false );
 		define( 'WC_MATCH2PAY_FILE', __FILE__ );
 		define( 'WC_MATCH2PAY_PATH', __DIR__ );
 		define( 'WC_MATCH2PAY_URL', plugins_url( '', WC_MATCH2PAY_FILE ) );
-		define( 'WC_MATCH2PAY_ASSETS', WC_MATCH2PAY_URL . '/assets' );
+		define( 'WC_MATCH2PAY_ASSETS', WC_MATCH2PAY_URL . '/public/assets' );
 	}
 
 	private function check_older_version(): void {
@@ -58,6 +68,7 @@ final class WC_Match2Pay_Crypto_Payment {
 	}
 
 	public function init_plugin(): void {
+		new \Match2Pay\Updater();
 		new \Match2Pay\Assets();
 		new \Match2Pay\Match2Pay_Hooks();
 		add_action( 'init', [ $this, 'register_order_status' ] );
@@ -136,7 +147,6 @@ function appsero_init_tracker_match2pay_crypto_payments_for_woocommerce() {
 
 	// Active insights
 	$client->insights()->init();
-
 }
 
 appsero_init_tracker_match2pay_crypto_payments_for_woocommerce();
