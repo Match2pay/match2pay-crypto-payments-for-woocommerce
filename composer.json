@@ -3,7 +3,10 @@
   "description": "Match2Pay Crypto Payments for WooCommerce",
   "type": "wordpress-plugin",
   "minimum-stability": "dev",
-  "license": "GPLv3",
+  "license": "GPLv2",
+  "config": {
+    "vendor-dir": "includes/vendor"
+  },
   "autoload": {
     "psr-4": {
       "Match2Pay\\": "includes/",
