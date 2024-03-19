@@ -99,6 +99,13 @@ class Payment_Gateway extends WC_Payment_Gateway {
 				'title' => 'Test Api Token Key',
 				'type'  => 'password',
 			),
+			'debug_log'       => array(
+				'title'       => 'Debug Enable/Disable',
+				'label'       => 'Debug Log for Match2Pay Gateway',
+				'type'        => 'checkbox',
+				'description' => '',
+				'default'     => 'yes'
+			),
 		);
 
 		$this->form_fields['currency_section_separator1'] = array(
