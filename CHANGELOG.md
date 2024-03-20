@@ -1,3 +1,10 @@
+# [1.1.0-next.3](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.1.0-next.2...v1.1.0-next.3) (2024-03-20)
+
+
+### Bug Fixes
+
+* add setting for debug & set enabled by default ([e22a7e6](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/commit/e22a7e6133d3f9b69e7bc7ea150b5e6540e8d762))
+* switching api base url ([7cdbd55](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/commit/7cdbd55bc367c1ec43d14030ed476a1937e4343c))
 
 # [1.1.0-next.2](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.1.0-next.1...v1.1.0-next.2) (2024-03-19)
 
