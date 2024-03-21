@@ -1,3 +1,10 @@
+# [1.1.0-next.4](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.1.0-next.3...v1.1.0-next.4) (2024-03-21)
+
+
+### Bug Fixes
+
+* add more logging for watcher process ([103c293](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/commit/103c293e90601d99cc446c2287122a1d5c79f0f3))
+
 # [1.1.0-next.3](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.1.0-next.2...v1.1.0-next.3) (2024-03-20)
 
 
