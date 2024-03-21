@@ -33,7 +33,6 @@ final class WC_Match2Pay_Crypto_Payment {
 		$plugin_path = trailingslashit( WP_PLUGIN_DIR ) . 'woocommerce/woocommerce.php';
 		if (
 			in_array( $plugin_path, wp_get_active_and_valid_plugins() )
-			|| in_array( $plugin_path, wp_get_active_network_plugins() )
 		) {
 			$this->define_constants();
 			$this->check_older_version();

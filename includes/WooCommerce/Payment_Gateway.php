@@ -586,78 +586,91 @@ class Payment_Gateway extends WC_Payment_Gateway {
 	}
 
 	public function get_transaction_data_by_order( $order_id ) {
-		$order              = wc_get_order( $order_id );
-		$paymentId          = $order->get_meta( 'match2pay_paymentId' );
-		$paymentGatewayName = $order->get_meta( 'match2pay_paymentGatewayName' );
-		$url                = $this->api_base_url . 'api/ui/public/payments/' . $paymentId;
-		$result             = wp_remote_get( $url );
+        try {
+            $this->logger->write_log( 'get_transaction_data_by_order started '. print_r( $order_id, true ), $this->debugLog );
+            $order              = wc_get_order( $order_id );
+            $paymentId          = $order->get_meta( 'match2pay_paymentId' );
+            $paymentGatewayName = $order->get_meta( 'match2pay_paymentGatewayName' );
+            $url                = $this->api_base_url . 'api/ui/public/payments/' . $paymentId;
+            $result             = wp_remote_get( $url );
+            $this->logger->write_log( 'get_transaction_data_by_order from m2p got response '. print_r( $result['body'], true ), $this->debugLog );
 
 
-		if ( $order_id != null ) {
-			$order          = wc_get_order( $order_id );
-			$order_amount   = esc_attr( ( ( WC()->version < '2.7.0' ) ? $order->order_total : $order->get_total() ) );
-			$order_currency = esc_attr( ( ( WC()->version < '2.7.0' ) ? $order->order_currency : $order->get_currency() ) );
-		} else {
-			$order_amount   = esc_attr( WC()->cart->total );
-			$order_currency = esc_attr( strtoupper( get_woocommerce_currency() ) );
-		}
+            if ( $order_id != null ) {
+                $order          = wc_get_order( $order_id );
+                $order_amount   = esc_attr( ( ( WC()->version < '2.7.0' ) ? $order->order_total : $order->get_total() ) );
+                $order_currency = esc_attr( ( ( WC()->version < '2.7.0' ) ? $order->order_currency : $order->get_currency() ) );
+            } else {
+                $order_amount   = esc_attr( WC()->cart->total );
+                $order_currency = esc_attr( strtoupper( get_woocommerce_currency() ) );
+            }
 
-		$response = json_decode( wp_remote_retrieve_body( $result ) );
+            $this->logger->write_log( 'get_transaction_data_by_order m2p ui $order_amount $order_currency'. print_r( [$order_amount,$order_currency], true ), $this->debugLog );
+            $response = json_decode( wp_remote_retrieve_body( $result ) );
 
-		$status = $response->paymentStatus;
+            $status = $response->paymentStatus;
 
-		$response->order_amount       = (float) $order_amount;
-		$response->order_currency     = $order_currency;
-		$response->is_enough          = ( $response->final->amount >= $response->order_amount ) && $response->paymentStatus === 'COMPLETED';
+            $response->order_amount   = (float) $order_amount;
+            $response->order_currency = $order_currency;
+            $response->is_enough      = ( $response->final->amount >= $response->order_amount ) && $response->paymentStatus === 'COMPLETED';
 //		$response->paymentGatewayName = $paymentGatewayName ?? 'Unknown';
-		$response->paymentGatewayName = $response->transaction->gatewayName ?? 'Unknown';
+            $response->paymentGatewayName = $response->transaction->gatewayName ?? 'Unknown';
 
 
-		if ( $status === 'COMPLETED' && $response->order_amount > $response->final->amount ) {
-			$status                             = 'PARTIALLY_PAID';
-			$response->paymentStatus            = $status;
-			$response->order_deposited_amount   = (float) $response->final->amount;
-			$response->order_left_to_pay_amount = (float) $order_amount - (float) $response->final->amount;
-		}
+            if ( $status === 'COMPLETED' && $response->order_amount > $response->final->amount ) {
+                $status                             = 'PARTIALLY_PAID';
+                $response->paymentStatus            = $status;
+                $response->order_deposited_amount   = (float) $response->final->amount;
+                $response->order_left_to_pay_amount = (float) $order_amount - (float) $response->final->amount;
+            }
 
-		if ( $status === 'STARTED' ) {
-			$response->order_left_to_pay_amount = (float) $order_amount;
-			$response->order_deposited_amount   = 0;
-		}
+            if ( $status === 'STARTED' ) {
+                $response->order_left_to_pay_amount = (float) $order_amount;
+                $response->order_deposited_amount   = 0;
+            }
 
-		if ( $status === 'COMPLETED' ) {
-			$response->order_left_to_pay_amount = 0;
-			$response->order_deposited_amount   = (float) $response->final->amount;
-			$response->order_overpay_amount     = $this->format_fiat_currency_amount( (float) $response->final->amount - (float) $order_amount );
-		}
+            if ( $status === 'COMPLETED' ) {
+                $response->order_left_to_pay_amount = 0;
+                $response->order_deposited_amount   = (float) $response->final->amount;
+                $response->order_overpay_amount     = $this->format_fiat_currency_amount( (float) $response->final->amount - (float) $order_amount );
+            }
 
-		$response->order_left_to_pay_crypto_amount = $this->format_crypto_currency_amount( $response->order_left_to_pay_amount / $response->realConversionRate );
+            $response->order_left_to_pay_crypto_amount = $this->format_crypto_currency_amount( $response->order_left_to_pay_amount / $response->realConversionRate );
 
 
-		return $response;
+            return $response;
+        } catch (Exception $e) {
+            $this->logger->write_log( 'get_transaction_data_by_order error '. print_r( $e->getMessage(), true ), $this->debugLog );
+            return null;
+        }
 	}
 
 	public static function match2pay_ajax_payment_watcher() {
-		$match2pay = new Payment_Gateway();
-		$widget    = new Payment_Widget();
-		$paymentId = $_POST['match2pay_paymentId'];
-		$order_id  = $match2pay->get_order_by_payment_id( $paymentId );
+		try {
+            $match2pay = new Payment_Gateway();
+            $widget    = new Payment_Widget();
+            $paymentId = $_POST['match2pay_paymentId'];
+            $order_id  = $match2pay->get_order_by_payment_id( $paymentId );
 
-		$match2pay->logger->write_log( print_r( $paymentId, true ), $match2pay->debugLog );
-		$match2pay->logger->write_log( print_r( $order_id, true ), $match2pay->debugLog );
+            $match2pay->logger->write_log( print_r( $paymentId, true ), $match2pay->debugLog );
+            $match2pay->logger->write_log( print_r( $order_id, true ), $match2pay->debugLog );
 
-		$response = $match2pay->get_transaction_data_by_order( $order_id );
+            $response = $match2pay->get_transaction_data_by_order( $order_id );
 
 
-		if ( $response->is_enough && $response->paymentStatus === 'COMPLETED' ) {
-			$order = wc_get_order( $order_id );
-			WC()->session->set( 'match2pay_paymentId', null );
-			$response->result   = 'success';
-			$response->redirect = $match2pay->get_return_url( $order );
-		}
-		$response->fragment = $widget->render_html( $order_id );
+            if ( $response->is_enough && $response->paymentStatus === 'COMPLETED' ) {
+                $order = wc_get_order( $order_id );
+                WC()->session->set( 'match2pay_paymentId', null );
+                $response->result   = 'success';
+                $response->redirect = $match2pay->get_return_url( $order );
+            }
+            $response->fragment = $widget->render_html( $order_id );
 
-		wp_send_json_success( $response );
+            wp_send_json_success( $response );
+        } catch (Exception $e) {
+            $match2pay->logger->write_log( 'match2pay_ajax_payment_watcher error '. print_r( $e->getMessage(), true ), $match2pay->debugLog );
+            wp_send_json_error( $e->getMessage() );
+        }
 	}
 
 	/**
@@ -668,7 +681,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$orderID = $_POST['order_id'];
 //		var_dump($_POST);
 //		throw new \Exception( 'Not implemented' );
-		$order      = wc_get_order( $orderID );
+		$order = wc_get_order( $orderID );
 //		$order_data = $order->get_data();
 //
 		$match2pay = new Payment_Gateway();
