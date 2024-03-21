@@ -1,3 +1,11 @@
+# [1.1.0-next.5](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.1.0-next.4...v1.1.0-next.5) (2024-03-21)
+
+
+### Bug Fixes
+
+* **watcher:** fix order id for order pay page ([e0938f1](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/commit/e0938f1b4795d0ec74a1c971ddcb80a0f5b3bbc7))
+* **updater:** fix purge function visibility ([80dcc28](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/commit/80dcc28b5ab8eb22756d225d34e1ee8ab02fd00d))
+
 # [1.1.0-next.4](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.1.0-next.3...v1.1.0-next.4) (2024-03-21)
 
 
