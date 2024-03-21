@@ -650,7 +650,12 @@ class Payment_Gateway extends WC_Payment_Gateway {
             $match2pay = new Payment_Gateway();
             $widget    = new Payment_Widget();
             $paymentId = $_POST['match2pay_paymentId'];
-            $order_id  = $match2pay->get_order_by_payment_id( $paymentId );
+
+            if ($_POST['order_id'] != null) {
+                $order_id = $_POST['order_id'];
+            } else {
+                $order_id = $match2pay->get_order_by_payment_id( $paymentId );
+            }
 
             $match2pay->logger->write_log( print_r( $paymentId, true ), $match2pay->debugLog );
             $match2pay->logger->write_log( print_r( $order_id, true ), $match2pay->debugLog );
