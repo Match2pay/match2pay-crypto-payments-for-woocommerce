@@ -4,6 +4,10 @@
 .match2pay-row label {
     margin-right: 15px;
 }
+.watcher-widget {
+    margin-top: 20px;
+}
+
 #match2pay-payment-form {
     margin-top: 20px;
 }
@@ -14,7 +18,10 @@
 .match2pay-payment-setting{
     margin-top: 20px;
 }
-#payment .payment_methods #match2pay-payment-form #match2pay-qr img {
+
+/** TODO: fix */
+#match2pay-payment-form #match2pay-qr img ,
+.match2pay-payment-setting #match2pay-qr img {
     max-width:100%;
     width: 200px;
     max-height: unset;
