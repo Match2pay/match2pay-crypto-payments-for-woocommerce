@@ -21,6 +21,8 @@
     "lint:pkg-json": "wp-scripts lint-pkg-json",
     "packages-update": "wp-scripts packages-update",
     "start": "wp-scripts start",
+    "start:dev": "SCRIPT_DEBUG=true wp-scripts start --config webpack.config.dev.js --mode=development",
+    "start:hot": "wp-scripts start --hot",
     "test:e2e": "wp-scripts test-e2e",
     "test:unit": "wp-scripts test-unit-js",
     "plugin-zip": "wp-scripts plugin-zip"
@@ -34,5 +36,10 @@
     "@woocommerce/eslint-plugin": "2.2.0",
     "@wordpress/scripts": "^27.0.0",
     "semantic-release-replace-plugin": "^1.2.7"
+  },
+  "dependencies": {
+    "ahooks": "^3.7.10",
+    "react": "^18.2.0",
+    "react-select": "^5.8.0"
   }
 }
