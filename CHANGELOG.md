@@ -1,3 +1,10 @@
+# [1.1.0-next.6](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.1.0-next.5...v1.1.0-next.6) (2024-03-27)
+
+
+### Features
+
+* **wp-blocks:** implemented wp block checkout component ([aa0970c](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/commit/aa0970c2aa0a41124196e9a6c5cfbfca8cd3551a))
+
 # [1.1.0-next.5](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.1.0-next.4...v1.1.0-next.5) (2024-03-21)
 
 
