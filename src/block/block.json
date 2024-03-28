@@ -1,0 +1,17 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "match2pay-crypto-payments-for-woocommerce/payment-method",
+  "version": "0.1.0",
+  "title": "Match2pay crypto payments for WooCommerce",
+  "description": "Accept Bitcoin, USDT i.e. TRC20, Ethereum, Litecoin, Ripple, Dogecoin and other Cryptocurrencies via Match2pay on your WooCommerce store.",
+  "category": "widgets",
+  "icon": "smiley",
+  "example": {},
+  "supports": {
+    "html": false
+  },
+  "textdomain": "match2pay-crypto-payments-for-woocommerce",
+  "editorScript": "file:./checkout.js",
+  "viewScript": "file:./checkout.js"
+}
