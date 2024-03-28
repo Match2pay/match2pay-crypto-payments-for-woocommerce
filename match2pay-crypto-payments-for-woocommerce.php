@@ -6,7 +6,7 @@
  * Author: Match2Pay
  * Author URI:
  * Text Domain: wc-match2pay-crypto-payment
- * Version: 1.2.0-next.2
+ * Version: 1.2.0-beta.2
  * Requires at least: 5.5
  * Tested up to: 6.4.2
  *
@@ -23,8 +23,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/includes/vendor/autoload.php';
 
-define( 'WC_MATCH2PAY_VERSION', '1.2.0-next.2' );
-define( 'WC_MATCH2PAY_UPDATER_URL', 'https://raw.githubusercontent.com/Match2pay/match2pay-crypto-payments-for-woocommerce/next/updater/next.json' );
+define( 'WC_MATCH2PAY_VERSION', '1.2.0-beta.2' );
+define( 'WC_MATCH2PAY_UPDATER_URL', 'https://raw.githubusercontent.com/Match2pay/match2pay-crypto-payments-for-woocommerce/beta/updater/beta.json' );
 
 final class WC_Match2Pay_Crypto_Payment {
 	public const version = WC_MATCH2PAY_VERSION;

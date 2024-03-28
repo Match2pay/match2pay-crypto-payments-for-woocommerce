@@ -1,3 +1,11 @@
+# [1.2.0-beta.2](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.2.0-beta.1...v1.2.0-beta.2) (2024-03-28)
+
+
+### Bug Fixes
+
+* **wp-block:** fix null order id ([b9ccf3b](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/commit/b9ccf3bf60c98ad50a43472c29bec18ec17a630f))
+* **gateway:** fix signature generation with trading account field ([ae6556f](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/commit/ae6556f245030c39a484ce37d2689422f61dbdef))
+
 # [1.2.0-next.2](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.2.0-next.1...v1.2.0-next.2) (2024-03-28)
 
 
