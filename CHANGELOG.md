@@ -1,3 +1,10 @@
+# [1.1.0-next.7](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.1.0-next.6...v1.1.0-next.7) (2024-03-28)
+
+
+### Bug Fixes
+
+* **gateway:** add order id link in trading account field ([3e077a9](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/commit/3e077a90af2ae2bdef2f15ed689cee967e8eafcd))
+
 # [1.1.0-next.6](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.1.0-next.5...v1.1.0-next.6) (2024-03-27)
 
 
