@@ -231,7 +231,6 @@ const Widget = ( props ) => {
 			const getFormData = () => {
 				const currency = selectedCurrency.value;
 				const formData = {
-					order_id,
 					currency,
 					match2pay_currency: currency,
 					...addressToPrefixedAddress(
@@ -243,6 +242,9 @@ const Widget = ( props ) => {
 						'shipping_'
 					),
 				};
+				if (order_id) {
+					formData.order_id = order_id;
+				}
 				return formData;
 			};
 
@@ -292,7 +294,6 @@ const Widget = ( props ) => {
 
 			const getFormData = () => {
 				const formData = {
-					order_id,
 					currency,
 					match2pay_currency: currency,
 					...addressToPrefixedAddress(
@@ -304,6 +305,9 @@ const Widget = ( props ) => {
 						'shipping_'
 					),
 				};
+				if (order_id) {
+					formData.order_id = order_id;
+				}
 				return formData;
 			};
 			const formData = getFormData();

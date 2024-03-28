@@ -797,6 +797,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$paymentGatewayName = $post_data['match2pay_currency'];
 
 		$match2pay_data = [
+            'tradingAccountLogin'=> $order_id,
 			"amount"             => $order_amount,
 			"currency"           => $order_currency,
 			"paymentGatewayName" => $paymentGatewayName,
@@ -810,8 +811,6 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$signature                   = implode( $match2pay_data );
 		$signature                   = hash( 'sha384', "{$signature}{$api_secret}" );
 		$match2pay_data['signature'] = $signature;
-
-		$match2pay_data['tradingAccountLogin'] = $order_id;
 
 		return $match2pay_data;
 	}
