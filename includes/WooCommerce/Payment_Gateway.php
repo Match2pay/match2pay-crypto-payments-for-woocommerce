@@ -811,6 +811,8 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$signature                   = hash( 'sha384', "{$signature}{$api_secret}" );
 		$match2pay_data['signature'] = $signature;
 
+		$match2pay_data['tradingAccountLogin'] = $order_id;
+
 		return $match2pay_data;
 	}
 
