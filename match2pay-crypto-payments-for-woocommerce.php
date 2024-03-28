@@ -22,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once __DIR__ . '/includes/vendor/autoload.php';
+
 define( 'WC_MATCH2PAY_VERSION', '1.2.0-next.2' );
 define( 'WC_MATCH2PAY_UPDATER_URL', 'https://raw.githubusercontent.com/Match2pay/match2pay-crypto-payments-for-woocommerce/next/updater/next.json' );
 
