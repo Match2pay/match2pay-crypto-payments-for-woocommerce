@@ -128,7 +128,7 @@ class Updater
 
     }
 
-    private function purge($upgrader, $options)
+    public function purge($upgrader, $options)
     {
         if ($this->cache_allowed && 'update' === $options['action'] && 'plugin' === $options['type']) {
             delete_transient($this->cache_key);

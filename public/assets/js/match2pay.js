@@ -297,6 +297,13 @@ jQuery( function ( $ ) {
 	}
 
 	window.match2pay_getPaymentFormDataCallback = function ( response ) {
+		if ( ! response.success && response.messages ) {
+			showError( response.messages, selector );
+			$( '#match2pay_embedded_payment_form_btn' ).show();
+			$( '#match2pay_embedded_payment_form_loading_txt' ).hide();
+			return null;
+		}
+
 		if ( response.data && response.success === false ) {
 			const messageItems = response.data.messages
 				.map( function ( message ) {
@@ -313,19 +320,9 @@ jQuery( function ( $ ) {
 			$( '#match2pay_embedded_payment_form_btn' ).show();
 			$( '#match2pay_embedded_payment_form_loading_txt' ).hide();
 			return null;
-		} else if (
-			response.result &&
-			response.result === 'failure' &&
-			response.messages &&
-			typeof response.messages === 'string'
-		) {
-			showError( response.messages, selector );
-			$( '#match2pay_embedded_payment_form_btn' ).show();
-			$( '#match2pay_embedded_payment_form_loading_txt' ).hide();
-			return null;
 		}
 
-		if ( ! response || ! response.status || response.status !== 'ok' ) {
+		if ( ! response.success ) {
 			console.warn( 'error occured when requesting payment form data' );
 			$( '#match2pay_embedded_payment_form_btn' ).show();
 			$( '#match2pay_embedded_payment_form_loading_txt' ).hide();
@@ -346,7 +343,7 @@ jQuery( function ( $ ) {
 
 		match2pay_createHiddenInputData(
 			'match2pay_paymentId',
-			response.payment_form_data.paymentId
+			response.data.payment_form_data.paymentId
 		);
 		match2pay_displayPaymentForm();
 	};
