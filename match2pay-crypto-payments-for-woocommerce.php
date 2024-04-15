@@ -7,6 +7,7 @@
  * Author URI:
  * Text Domain: wc-match2pay-crypto-payment
  * Version: 1.2.0-beta.2
+ * Version: 1.1.1
  * Requires at least: 5.5
  * Tested up to: 6.4.2
  *
