@@ -5,7 +5,7 @@ namespace Match2Pay;
 use Match2Pay\WooCommerce\Payment_Gateway;
 
 class Assets {
-	function __construct() {
+	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_assets' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_assets' ) );
 	}

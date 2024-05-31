@@ -27,7 +27,7 @@ define( 'WC_MATCH2PAY_VERSION', '1.0.7' );
 define( 'WC_MATCH2PAY_UPDATER_URL', 'http://localhost:3000/localhost.json' );
 
 final class WC_Match2Pay_Crypto_Payment {
-	public const version = WC_MATCH2PAY_VERSION;
+	public const VERSION = WC_MATCH2PAY_VERSION;
 
 	private function __construct() {
 		$plugin_path = trailingslashit( WP_PLUGIN_DIR ) . 'woocommerce/woocommerce.php';
@@ -167,13 +167,13 @@ final class WC_Match2Pay_Crypto_Payment {
 	}
 
 	public function activate() {
-		$checkWC = in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) );
+		// $checkWC = in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) );
 
-		if ( ! $checkWC ) {
-
-		} else {
-
-		}
+		// if ( ! $checkWC ) {
+		//
+		// } else {
+		//
+		// }
 	}
 }
 

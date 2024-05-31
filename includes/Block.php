@@ -40,9 +40,9 @@ final class Block extends AbstractPaymentMethodType {
 			null,
 			true
 		);
-		if ( function_exists( 'wp_set_script_translations' ) ) {
-			// wp_set_script_translations( 'wc-match2pay-blocks-integration', 'wc-match2pay', 'languages/' );
-		}
+		// if ( function_exists( 'wp_set_script_translations' ) ) {
+		// wp_set_script_translations( 'wc-match2pay-blocks-integration', 'wc-match2pay', 'languages/' );
+		// }
 
 		return array( 'wc-match2pay-blocks-integration' );
 	}
