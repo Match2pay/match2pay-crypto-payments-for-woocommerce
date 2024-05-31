@@ -5,7 +5,10 @@
   "minimum-stability": "dev",
   "license": "GPLv2",
   "config": {
-    "vendor-dir": "includes/vendor"
+    "vendor-dir": "includes/vendor",
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   },
   "autoload": {
     "psr-4": {
@@ -15,5 +18,8 @@
   },
   "require": {
     "appsero/client": "dev-develop"
+  },
+  "require-dev": {
+    "wp-coding-standards/wpcs": "^3.0"
   }
 }

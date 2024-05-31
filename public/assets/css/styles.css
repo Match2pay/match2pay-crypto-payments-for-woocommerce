@@ -1,85 +1,85 @@
 .match2pay-row {
-    display: flex;
+	display: flex;
 }
 .match2pay-row label {
-    margin-right: 15px;
+	margin-right: 15px;
 }
 .watcher-widget {
-    margin-top: 20px;
+	margin-top: 20px;
 }
 
 #match2pay-payment-form {
-    margin-top: 20px;
+	margin-top: 20px;
 }
 .match2pay-pay-with {
-    margin-top: 20px;
+	margin-top: 20px;
 }
 
 .match2pay-payment-setting{
-    margin-top: 20px;
+	margin-top: 20px;
 }
 
 /** TODO: fix */
 #match2pay-payment-form #match2pay-qr img ,
 .match2pay-payment-setting #match2pay-qr img {
-    max-width:100%;
-    width: 200px;
-    max-height: unset;
-    height: auto;
-    float: none;
-    margin: auto;
+	max-width:100%;
+	width: 200px;
+	max-height: unset;
+	height: auto;
+	float: none;
+	margin: auto;
 }
 
 .match2pay-payment-details{
-    margin-top: 10px;
-    text-align: center;
+	margin-top: 10px;
+	text-align: center;
 }
 
 #payment .payment_methods .match2pay-wallet-address {
-    margin-top: 20px;
-    margin-bottom: 20px;
+	margin-top: 20px;
+	margin-bottom: 20px;
 }
 
 .match2pay-wallet-address{
-    background: #f5f5f5;
-    text-align: center;
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    overflow-wrap: anywhere;
+	background: #f5f5f5;
+	text-align: center;
+	padding: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	overflow-wrap: anywhere;
 }
 .match2pay-wallet-address img {
-    height: 1em;
-    width: 1em;
-    margin-left: 15px;
-    vertical-align: middle;
+	height: 1em;
+	width: 1em;
+	margin-left: 15px;
+	vertical-align: middle;
 }
 
 #payment .payment_methods .match2pay-payment-notice{
-    margin-top: 20px;
-    text-align: center;
-    font-size: 12px;
-    color: #999;
+	margin-top: 20px;
+	text-align: center;
+	font-size: 12px;
+	color: #999;
 }
 .match2pay-payment-conversion-rate{
-    margin-top: 20px;
-    text-align: center;
-    font-size: 14px;
-    color: #999;
+	margin-top: 20px;
+	text-align: center;
+	font-size: 14px;
+	color: #999;
 }
 
 .match2pay-copied{
-    background: #388e3c;
-    color: white;
+	background: #388e3c;
+	color: white;
 }
 
 .match2pay-accent{
-    color: black;
-    font-weight: bold;
+	color: black;
+	font-weight: bold;
 }
 .single-currency{
-    display: flex;
-    justify-content: center;
+	display: flex;
+	justify-content: center;
 }

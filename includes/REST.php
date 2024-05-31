@@ -29,11 +29,11 @@ class REST {
 		register_rest_route(
 			'match2pay/v2',
 			'/match2pay_webhook',
-			[
+			array(
 				'methods'             => 'POST',
-				'callback'            => [ $this, 'handle_api_webhook_update' ],
+				'callback'            => array( $this, 'handle_api_webhook_update' ),
 				'permission_callback' => '__return_true',
-			]
+			)
 		);
 	}
 
@@ -69,7 +69,7 @@ class REST {
 		$callback_signature = $request->get_header( 'signature' );
 		$this->logger->write_log( 'webhook_update(): $paymentId. ' . $paymentId, $debugLoged );
 
-		$order_id = $match2pay->get_order_by_payment_id($paymentId);
+		$order_id = $match2pay->get_order_by_payment_id( $paymentId );
 
 		if ( ! $order_id ) {
 			$this->logger->write_log( 'webhook_update(): $order_id is null. ' . json_encode( $order_id ), $debugLoged );
@@ -87,7 +87,7 @@ class REST {
 			return new WP_Error(
 				'bad_signature',
 				'Bad signature',
-				[ 'status' => 403 ]
+				array( 'status' => 403 )
 			);
 		}
 
@@ -96,7 +96,7 @@ class REST {
 			return new WP_Error(
 				'signature_mismatch',
 				'Signature mismatch',
-				[ 'status' => 401 ]
+				array( 'status' => 401 )
 			);
 		}
 
