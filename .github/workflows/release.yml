@@ -33,6 +33,8 @@ jobs:
         with:
           php-version: "7.4"
       - uses: "ramsey/composer-install@v3"
+        with:
+          composer-options: "--ignore-platform-reqs --optimize-autoloader --no-dev"
 
       - name: Install Dependencies
         run: npm install
