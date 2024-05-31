@@ -55,7 +55,7 @@ class Updater {
 		return $remote;
 	}
 
-	function info( $response, $action, $args ) {
+	public function info( $response, $action, $args ) {
 		if ( empty( $args->slug ) || $this->plugin_slug !== $args->slug ) {
 			return $response;
 		}

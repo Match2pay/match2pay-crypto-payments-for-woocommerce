@@ -42,7 +42,7 @@ class Payment_Widget {
 
 		$html .= '<div class="match2pay-payment-details">';
 
-		if ( $paymentStatus === 'STARTED' ) {
+		if ( 'STARTED' === $paymentStatus ) {
 			$amount           = htmlspecialchars( $data->final->amount );
 			$currency         = htmlspecialchars( $data->final->currency );
 			$paymentFinal     = $amount . ' ' . $currency;
@@ -51,7 +51,7 @@ class Payment_Widget {
 			$html            .= '<p>' . $description . '</p>';
 		}
 
-		if ( $paymentStatus === 'PARTIALLY_PAID' ) {
+		if ( 'PARTIALLY_PAID' === $paymentStatus ) {
 			$order_left_to_pay_amount = htmlspecialchars( $data->order_left_to_pay_amount );
 			$currency                 = htmlspecialchars( $data->final->currency );
 			$paymentFinal             = $order_left_to_pay_amount . ' ' . $currency;
@@ -66,14 +66,14 @@ class Payment_Widget {
 			$html                    .= '<p>' . $description2 . '</p>';
 		}
 
-		if ( $paymentStatus === 'PENDING' && isset( $data->transactions ) ) {
+		if ( 'PENDING' === $paymentStatus && isset( $data->transactions ) ) {
 			$receivedConfirmations = htmlspecialchars( $data->transactions->confirmationOfTheLastTransaction->receivedConfirmations );
 			$requiredConfirmations = htmlspecialchars( $data->transactions->confirmationOfTheLastTransaction->requiredConfirmations );
 			$description           = 'We have received ' . $receivedConfirmations . ' confirmations of ' . $requiredConfirmations . ' required.<br/> Please wait for the transaction to be confirmed.';
 			$html                 .= '<p>' . $description . '</p>';
 		}
 
-		if ( $paymentStatus === 'COMPLETED' ) {
+		if ( 'COMPLETED' === $paymentStatus ) {
 			$description = 'Payment completed.';
 			$html       .= '<p>' . $description . '</p>';
 		}
@@ -82,7 +82,7 @@ class Payment_Widget {
 
 		$html .= '<p class="match2pay-wallet-address">' . $paymentAddress . '<img alt="copy" src="' . $copyIcon . '"></p>';
 		$html .= '<p class="' . htmlspecialchars( $paymentStatus ) . '">' . htmlspecialchars( $this->get_status_text( $paymentStatus ) ) . '</p>';
-		$html .= '<p class="match2pay-payment-conversion-rate">1 ' . $paymentGatewayName . ' = ' . $conversionRate . ' USD' . '</p>';
+		$html .= '<p class="match2pay-payment-conversion-rate">1 ' . $paymentGatewayName . ' = ' . $conversionRate . ' USD</p>';
 		$html .= '<p class="match2pay-payment-notice">Please pay the exact amount. Avoid paying from a crypto exchange, use your personal wallet.</p>';
 
 		$html .= '</div>';

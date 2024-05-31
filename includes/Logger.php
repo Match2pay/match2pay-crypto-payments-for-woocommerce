@@ -5,6 +5,8 @@ namespace Match2Pay;
 class Logger {
 
 	/**
+	 * Singleton instance
+	 *
 	 * @var Logger
 	 */
 	private static $instance;

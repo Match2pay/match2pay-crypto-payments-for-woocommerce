@@ -11,7 +11,7 @@ use Match2Pay\WooCommerce\Payment_Gateway;
 
 class Match2Pay_Hooks {
 
-	private \Match2Pay\API $api;
+	private $api;
 
 	public function __construct() {
 		$this->api = API::get_instance();

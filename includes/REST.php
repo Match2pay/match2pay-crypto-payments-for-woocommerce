@@ -11,12 +11,15 @@ use WP_REST_Request;
 class REST {
 
 	/**
+	 * Singleton instance
+	 *
 	 * @var API
 	 */
 	protected $api;
 	protected $logger;
 
 	/**
+	 * REST constructor.
 	 *
 	 * @param API $api
 	 */

@@ -213,7 +213,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 	public function payment_fields() {
 		echo $this->get_description( '' );
 		echo $this->display_embedded_payment_form_button( '' );
-		echo "<!-- anti-checkout.js-fragment-cache '" . $this->carts_totals_hash() . "' -->";
+		echo "<!-- anti-checkout.js-fragment-cache '" . esc_attr( $this->carts_totals_hash() ) . "' -->";
 	}
 
 	public function carts_totals_hash() {
@@ -226,7 +226,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$result = OrdersTableDataStore::get_meta_table_name();
 		$this->logger->write_log( print_r( $result, true ), $this->debugLog );
 		global $wpdb;
-		$results = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}wc_orders_meta WHERE meta_value = '{$payment_id}' AND meta_key = 'match2pay_paymentId'" );
+		$results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wc_orders_meta WHERE meta_value = %s AND meta_key = 'match2pay_paymentId'", $payment_id ) );
 		if ( $results ) {
 			return $results->order_id;
 		} else {
@@ -234,9 +234,6 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		}
 	}
 
-	/**
-	 * @param $order WC_Order
-	 */
 	public function populate_order_data() {
 		$checkout    = new WC_Checkout();
 		$errors      = new WP_Error();
@@ -296,13 +293,12 @@ class Payment_Gateway extends WC_Payment_Gateway {
 
 	public static function match2pay_ajax_get_payment_form_data() {
 
-		if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], '_wc_match2pay_get_payment_form_data' ) ) {
+		if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], '_wc_match2pay_get_payment_form_data' ) ) {
 			wp_die( __( 'Bad attempt, invalid nonce for payment form data request', 'wc-match2pay-crypto-payment' ) );
 		}
 
 		$match2pay = new Payment_Gateway();
-		$order_id  = $_POST['order_id'];
-
+		$order_id  = filter_input( INPUT_POST, 'order_id', FILTER_SANITIZE_NUMBER_INT );
 		if ( ! $order_id ) {
 			$order_id = $match2pay->populate_order_data();
 			$order    = wc_get_order( $order_id );
@@ -618,19 +614,19 @@ class Payment_Gateway extends WC_Payment_Gateway {
 			// $response->paymentGatewayName = $paymentGatewayName ?? 'Unknown';
 			$response->paymentGatewayName = $response->transaction->gatewayName ?? 'Unknown';
 
-			if ( $status === 'COMPLETED' && $response->order_amount > $response->final->amount ) {
+			if ( 'COMPLETED' === $status && $response->order_amount > $response->final->amount ) {
 				$status                             = 'PARTIALLY_PAID';
 				$response->paymentStatus            = $status;
 				$response->order_deposited_amount   = (float) $response->final->amount;
 				$response->order_left_to_pay_amount = (float) $order_amount - (float) $response->final->amount;
 			}
 
-			if ( $status === 'STARTED' ) {
+			if ( 'STARTED' === $status ) {
 				$response->order_left_to_pay_amount = (float) $order_amount;
 				$response->order_deposited_amount   = 0;
 			}
 
-			if ( $status === 'COMPLETED' ) {
+			if ( 'COMPLETED' === $status ) {
 				$response->order_left_to_pay_amount = 0;
 				$response->order_deposited_amount   = (float) $response->final->amount;
 				$response->order_overpay_amount     = $this->format_fiat_currency_amount( (float) $response->final->amount - (float) $order_amount );
@@ -662,7 +658,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 
 			$response = $match2pay->get_transaction_data_by_order( $order_id );
 
-			if ( $response->is_enough && $response->paymentStatus === 'COMPLETED' ) {
+			if ( $response->is_enough && 'COMPLETED' === $response->paymentStatus ) {
 				$order = wc_get_order( $order_id );
 				WC()->session->set( 'match2pay_orderId', null );
 				WC()->session->set( 'match2pay_paymentId', null );
@@ -922,13 +918,13 @@ class Payment_Gateway extends WC_Payment_Gateway {
 				return;
 			}
 
-			if ( $paymentStatus !== 'DONE' ) {
+			if ( 'DONE' !== $paymentStatus ) {
 				return;
 			}
 
 			$this->logger->write_log( json_encode( $order->get_status() ) );
 
-			if ( $order->get_status() === 'completed' || $order->get_status() === 'processing' ) {
+			if ( 'completed' === $order->get_status() || 'processing' === $order->get_status() ) {
 				$this->logger->write_log( 'Skipping order with status: ' . $order->get_status() );
 
 				return;

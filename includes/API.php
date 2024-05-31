@@ -6,6 +6,8 @@ use Match2Pay\Logger;
 
 class API {
 	/**
+	 * Singleton instance
+	 *
 	 * @var API
 	 */
 	private static $instance;
