@@ -1,3 +1,10 @@
+# [1.2.0-next.4](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.2.0-next.3...v1.2.0-next.4) (2024-05-31)
+
+
+### Bug Fixes
+
+* **php:** php vendor install at ci/cd ([65be2c0](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/commit/65be2c06805aae5fc42831e05410435dd7bcca20))
+
 # [1.2.0-next.3](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.2.0-next.2...v1.2.0-next.3) (2024-05-31)
 
 
