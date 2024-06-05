@@ -483,7 +483,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		exit;
 	}
 
-	public function display_currency_select( $echo = true ) {
+	public function display_currency_select() {
 		$currencies = $this->get_active_currencies();
 		$output     = '';
 
@@ -502,11 +502,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 			$output .= '</select>';
 		}
 
-		if ( $echo ) {
-			echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		} else {
-			return $output;
-		}
+		return $output;
 	}
 
 	public function display_embedded_payment_form_button( $button_html ) {
@@ -834,12 +830,6 @@ class Payment_Gateway extends WC_Payment_Gateway {
 
 	// TODO: refactor
 	public function validate_fields() {
-
-		if ( empty( $_POST['billing_first_name'] ) ) {
-			wc_add_notice( 'First name is required!', 'error' );
-
-			return false;
-		}
 
 		return true;
 	}
