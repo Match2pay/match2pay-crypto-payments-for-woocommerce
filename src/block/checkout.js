@@ -4,6 +4,7 @@ import { addressToPrefixedAddress } from '../utils/address';
 import { QrCode } from '../components/QrCode';
 import { Button } from '../components/Button';
 import { useInterval, useMount } from 'ahooks';
+import { logger } from "../utils/logger";
 
 const { __ } = window.wp.i18n;
 const { decodeEntities } = window.wp.htmlEntities;
@@ -11,20 +12,6 @@ const { registerPaymentMethod } = window.wc.wcBlocksRegistry;
 
 const settings = window.wc.wcSettings.getSetting( 'wc-match2pay_data', {} );
 
-const logger = {
-	log: ( ...args ) => {
-		if ( settings.debug ) {
-			// eslint-disable-next-line no-console
-			console.log( ...args );
-		}
-	},
-	error: ( ...args ) => {
-		if ( settings.debug ) {
-			// eslint-disable-next-line no-console
-			console.error( ...args );
-		}
-	},
-};
 
 const currencies = Object.entries( settings.currencies ).map(
 	( [ code, currency ] ) => {
