@@ -294,7 +294,12 @@ class Payment_Gateway extends WC_Payment_Gateway {
 	public static function match2pay_ajax_get_payment_form_data() {
 		$nonce = filter_input( INPUT_GET, '_wpnonce', FILTER_SANITIZE_STRING );
 		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, '_wc_match2pay_get_payment_form_data' ) ) {
-            wp_send_json_error( array( 'status' => 'failed', 'message' => 'Invalid nonce for payment form data request' ) );
+			wp_send_json_error(
+				array(
+					'status'  => 'failed',
+					'message' => 'Invalid nonce for payment form data request',
+				)
+			);
 		}
 
 		$match2pay = new Payment_Gateway();
@@ -342,8 +347,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 
 			return;
 		}
-		$post_data          = $_POST;
-		$paymentGatewayName = $post_data['match2pay_currency'];
+		$paymentGatewayName = filter_input( INPUT_POST, 'match2pay_currency', FILTER_SANITIZE_STRING );
 
 		$order->add_meta_data( 'match2pay_paymentId_history', $payment_form_data->paymentId );
 		$order->update_meta_data( 'match2pay_paymentId', $payment_form_data->paymentId );
@@ -381,7 +385,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$nonce = filter_input( INPUT_GET, '_wpnonce', FILTER_SANITIZE_STRING );
 		if ( ! wp_verify_nonce( $nonce, '_wc_match2pay_start_checkout_nonce' ) ) {
 			$self->logger->write_log( 'match2pay_start_checkout() ERROR: wrong nonce.', $self->debugLog );
-			wp_die( __( 'Bad attempt, invalid nonce for checkout_start', 'wc-match2pay-crypto-payment' ) );
+			wp_die( esc_html__( 'Bad attempt, invalid nonce for checkout_start', 'wc-match2pay-crypto-payment' ) );
 		}
 
 		add_action(
@@ -485,21 +489,21 @@ class Payment_Gateway extends WC_Payment_Gateway {
 
 		if ( count( $currencies ) == 1 ) {
 			$currency = array_values( $currencies )[0];
-			$output  .= '<input type="hidden" name="match2pay_currency" value="' . array_keys( $currencies )[0] . '">';
-			$output  .= '<input type="hidden" name="match2pay_currency_name" value="' . $currency['paymentCurrency'] . '">';
+			$output  .= '<input type="hidden" name="match2pay_currency" value="' . esc_attr( array_keys( $currencies )[0] ) . '">';
+			$output  .= '<input type="hidden" name="match2pay_currency_name" value="' . esc_attr( $currency['paymentCurrency'] ) . '">';
 		} else {
 			$select_currency_text = __( 'Select Payment Cryptocurrency', 'wc-match2pay-crypto-payment' );
-			$output              .= '<label>' . $select_currency_text . ' <span class="required">*</span></label>';
+			$output              .= '<label>' . esc_html( $select_currency_text ) . ' <span class="required">*</span></label>';
 			$output              .= '<select id="match2pay_currency" name="match2pay_currency" class="select2" style="min-width: 150px;">';
-			$output              .= '<option value="">' . __( 'Select currency', 'wc-match2pay-crypto-payment' ) . '</option>';
+			$output              .= '<option value="">' . esc_html__( 'Select currency', 'wc-match2pay-crypto-payment' ) . '</option>';
 			foreach ( $currencies as $code => $currency ) {
-				$output .= '<option value="' . $code . '">' . $code . '</option>';
+				$output .= '<option value="' . esc_attr( $code ) . '">' . esc_html( $code ) . '</option>';
 			}
 			$output .= '</select>';
 		}
 
 		if ( $echo ) {
-			echo $output;
+			echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		} else {
 			return $output;
 		}
@@ -611,7 +615,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 
 			$response->order_amount   = (float) $order_amount;
 			$response->order_currency = $order_currency;
-			$response->is_enough      = ( $response->final->amount >= $response->order_amount ) && $response->paymentStatus === 'COMPLETED';
+			$response->is_enough      = ( $response->final->amount >= $response->order_amount ) && 'COMPLETED' === $response->paymentStatus;
 			// $response->paymentGatewayName = $paymentGatewayName ?? 'Unknown';
 			$response->paymentGatewayName = $response->transaction->gatewayName ?? 'Unknown';
 
@@ -644,13 +648,22 @@ class Payment_Gateway extends WC_Payment_Gateway {
 
 	public static function match2pay_ajax_payment_watcher() {
 		try {
+			$nonce = filter_input( INPUT_GET, '_wpnonce', FILTER_SANITIZE_STRING );
+			if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, '_wc_match2pay_watcher' ) ) {
+				wp_send_json_error(
+					array(
+						'status'  => 'failed',
+						'message' => 'Invalid nonce for payment form data request',
+					)
+				);
+			}
+
 			$match2pay = new Payment_Gateway();
 			$widget    = new Payment_Widget();
-			$paymentId = $_POST['match2pay_paymentId'];
+			$paymentId = filter_input( INPUT_POST, 'match2pay_paymentId', FILTER_SANITIZE_STRING );
+			$order_id  = filter_input( INPUT_POST, 'order_id', FILTER_SANITIZE_NUMBER_INT );
 
-			if ( null != $_POST['order_id'] ) {
-				$order_id = $_POST['order_id'];
-			} else {
+			if ( null === $order_id ) {
 				$order_id = $match2pay->get_order_by_payment_id( $paymentId );
 			}
 
@@ -680,7 +693,18 @@ class Payment_Gateway extends WC_Payment_Gateway {
 	 * TODO: ??
 	 */
 	public static function match2pay_ajax_orderpay_payment_request() {
-		$orderID   = $_POST['order_id'];
+		$nonce = filter_input( INPUT_GET, '_wpnonce', FILTER_SANITIZE_STRING );
+		// TODO: check nonce for order pay page
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, '_wc_match2pay_watcher' ) ) {
+			wp_send_json_error(
+				array(
+					'status'  => 'failed',
+					'message' => 'Invalid nonce for payment form data request',
+				)
+			);
+		}
+
+		$orderID   = filter_input( INPUT_POST, 'order_id', FILTER_SANITIZE_NUMBER_INT );
 		$order     = wc_get_order( $orderID );
 		$match2pay = new Payment_Gateway();
 
@@ -709,7 +733,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$post_url = $this->api_base_url . 'api/v2/deposit/crypto_agent';
 
 		$body = $this->preparePaymentFormRequestBody(
-			$order_id,
+			$order_id
 		);
 
 		$self->logger->write_log( 'Making a payment form API request with body: ' . wc_print_r( $body, true ), $self->debugLog );
@@ -764,7 +788,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 
 
 	private function preparePaymentFormRequestBody( $order_id ) {
-		if ( $order_id != null ) {
+		if ( null != $order_id ) {
 			$order = wc_get_order( $order_id );
 
 			$this->logger->write_log( 'Order Pay Page Cart Total:' . $order->get_total(), $this->debugLog );
@@ -787,8 +811,7 @@ class Payment_Gateway extends WC_Payment_Gateway {
 		$currencies         = $this->get_match2pay_currencies();
 		$api_token          = $this->api_token;
 		$api_secret         = $this->api_secret;
-		$post_data          = $_POST;
-		$paymentGatewayName = $post_data['match2pay_currency'];
+		$paymentGatewayName = filter_input( INPUT_POST, 'match2pay_currency', FILTER_SANITIZE_STRING );
 
 		$match2pay_data = array(
 			'tradingAccountLogin' => $order_id,
