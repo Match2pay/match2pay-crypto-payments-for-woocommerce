@@ -30,9 +30,9 @@ class Admin {
 			echo '<div>';
 			echo '<h4 style="margin-top: 30px;">Crypto Payment Details</h4>';
 
-			$url  = $match2pay->api_base_url . 'requests' . '?paymentId=' . $paymentId;
-			$link = '<a href="' . esc_attr( $url ) . '">' . $paymentId . '</a>';
-			echo '<p><strong>Payment Id:</strong> ' . $link . '</p>';
+			$url  = $match2pay->api_base_url . 'requests?paymentId=' . $paymentId;
+			$link = '<a href="' . esc_url( $url ) . '">' . $paymentId . '</a>';
+			echo '<p><strong>Payment Id:</strong> ' . esc_attr( $link ) . '</p>';
 			echo '<p><strong>Wallet Address:</strong> ' . esc_html( $payment_details_obj->walletAddress ) . '</p>';
 			echo '<p><strong>Transaction Gateway Name:</strong> ' . esc_html( $payment_details_obj->transaction->gatewayName ) . '</p>';
 			echo '<p><strong>Payment Status:</strong> ' . esc_html( $payment_details_obj->paymentStatus ) . '</p>';
