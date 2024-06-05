@@ -137,6 +137,7 @@ final class WC_Match2Pay_Crypto_Payment {
 				'exclude_from_search'       => false,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
+				// Translators: %s is the number of partially paid items.
 				'label_count'               => _n_noop( 'Partially Paid (%s)', 'Partially Paid (%s)' ),
 			)
 		);
