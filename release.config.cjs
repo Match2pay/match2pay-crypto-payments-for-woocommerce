@@ -27,24 +27,79 @@ module.exports = {
                 }
             }
         ],
+        // [
+        //     "@semantic-release/release-notes-generator",
+        //     {
+        //         "preset": "angular",
+        //         "parserOpts": {
+        //             "noteKeywords": [
+        //                 "BREAKING CHANGE",
+        //                 "BREAKING CHANGES",
+        //                 "BREAKING"
+        //             ]
+        //         },
+        //         "writerOpts": {
+        //             "commitsSort": [
+        //                 "subject",
+        //                 "scope"
+        //             ]
+        //         }
+        //     }
+        // ],
         [
-            "@semantic-release/release-notes-generator",
+            '@semantic-release/release-notes-generator',
             {
-                "preset": "angular",
-                "parserOpts": {
-                    "noteKeywords": [
-                        "BREAKING CHANGE",
-                        "BREAKING CHANGES",
-                        "BREAKING"
-                    ]
+                preset: 'conventionalcommits',
+                writerOpts: {
+                    // Customizing the changelog output to match keepachangelog.com format
+                    headerPartial: `## [{{version}}] - {{date}}\n`,
+                    commitPartial: `- {{#if scope}}**{{scope}}:** {{/if}}{{message}}`,
+                    footerPartial: `\n`,
+                    transform: (commit, context) => {
+                        let type = '';
+                        switch (commit.type) {
+                            case 'feat':
+                                type = 'Added';
+                                break;
+                            case 'fix':
+                                type = 'Fixed';
+                                break;
+                            case 'docs':
+                                type = 'Documentation';
+                                break;
+                            case 'style':
+                                type = 'Styles';
+                                break;
+                            case 'refactor':
+                                type = 'Refactored';
+                                break;
+                            case 'perf':
+                                type = 'Performance';
+                                break;
+                            case 'test':
+                                type = 'Tests';
+                                break;
+                            case 'build':
+                                type = 'Build';
+                                break;
+                            case 'ci':
+                                type = 'CI';
+                                break;
+                            case 'chore':
+                                type = 'Chores';
+                                break;
+                            case 'revert':
+                                type = 'Reverted';
+                                break;
+                            default:
+                                type = 'Other';
+                                break;
+                        }
+                        commit.type = type;
+                        return commit;
+                    },
                 },
-                "writerOpts": {
-                    "commitsSort": [
-                        "subject",
-                        "scope"
-                    ]
-                }
-            }
+            },
         ],
         [
             "semantic-release-replace-plugin",
@@ -98,7 +153,7 @@ module.exports = {
         [
             "@semantic-release/changelog",
             {
-                "changelogFile": "CHANGELOG.md"
+                "changelogFile": "changelog.txt"
             }
         ],
         [
@@ -113,7 +168,6 @@ module.exports = {
                 "assets": [
                     "match2pay-crypto-payments-for-woocommerce.php",
                     "package.json",
-                    "CHANGELOG.md",
                     "updater/main.json",
                     "updater/beta.json",
                     "updater/next.json",
