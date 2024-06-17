@@ -49,7 +49,7 @@ module.exports = {
         [
             '@semantic-release/release-notes-generator',
             {
-                preset: 'conventionalcommits',
+                preset: 'angular',
                 writerOpts: {
                     // Customizing the changelog output to match keepachangelog.com format
                     headerPartial: `## [{{version}}] - {{date}}\n`,
