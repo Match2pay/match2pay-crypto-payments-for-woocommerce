@@ -184,6 +184,12 @@ module.exports = {
             }
         ],
         [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "bash scripts/zip-format.bash"
+            }
+        ],
+        [
             "@semantic-release/github",
             {
                 "assets": [
