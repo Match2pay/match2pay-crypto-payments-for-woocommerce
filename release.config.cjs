@@ -60,13 +60,15 @@ module.exports = {
 {{~/if~}}
 {{~#if isPatch~}} </small>
 {{~/if}}`,
-                    mainTemplate: `{{#each releases}}
+                    mainTemplate: `{{> header}}
 
-{{date}} - version {{version}}
+{{#each commitGroups}}
 {{#each commits}}
-{{> commit}}
+{{> commit root=@root}}
 {{/each}}
-{{/each}}`,
+{{/each}}
+
+{{> footer}}`,
                     transform: (commit, context) => {
                         if (commit.type === 'feat') {
                             commit.type = '* Added';
