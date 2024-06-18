@@ -159,7 +159,7 @@ module.exports = {
             '@semantic-release/changelog',
             {
                 changelogFile: 'changelog.txt',
-                changelogTitle: '',
+                changelogTitle: '*** Cryptocurrency Payment Gateway Match2Pay for WooCommerce Changelog ***\n\n',
                 writerOpts: {
                     headerPartial: `*** Cryptocurrency Payment Gateway Match2Pay for WooCommerce Changelog ***\n\n`,
                     mainTemplate: `{{#each releases}}
