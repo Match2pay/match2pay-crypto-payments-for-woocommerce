@@ -51,56 +51,61 @@ module.exports = {
             {
                 preset: 'angular',
                 writerOpts: {
-                    // Customizing the changelog output to match keepachangelog.com format
-                    headerPartial: `## [{{version}}] - {{date}}\n`,
-                    commitPartial: `- {{#if scope}}**{{scope}}:** {{/if}}{{message}}`,
-                    footerPartial: `\n`,
                     transform: (commit, context) => {
                         let type = '';
                         switch (commit.type) {
                             case 'feat':
-                                type = 'Added';
+                                type = '* Added';
                                 break;
                             case 'fix':
-                                type = 'Fixed';
+                                type = '* Fixed';
                                 break;
                             case 'docs':
-                                type = 'Documentation';
+                                type = '* Documentation';
                                 break;
                             case 'style':
-                                type = 'Styles';
+                                type = '* Styles';
                                 break;
                             case 'refactor':
-                                type = 'Refactored';
+                                type = '* Refactored';
                                 break;
                             case 'perf':
-                                type = 'Performance';
+                                type = '* Performance';
                                 break;
                             case 'test':
-                                type = 'Tests';
+                                type = '* Tests';
                                 break;
                             case 'build':
-                                type = 'Build';
+                                type = '* Build';
                                 break;
                             case 'ci':
-                                type = 'CI';
+                                type = '* CI';
                                 break;
                             case 'chore':
-                                type = 'Chores';
+                                type = '* Chores';
                                 break;
                             case 'revert':
-                                type = 'Reverted';
+                                type = '* Reverted';
                                 break;
                             default:
-                                type = 'Other';
+                                type = '* Other';
                                 break;
                         }
                         commit.type = type;
                         return commit;
                     },
+                    headerPartial: `*** Cryptocurrency Payment Gateway Match2Pay for WooCommerce Changelog ***\n\n`,
+                    commitPartial: `{{type}}: {{message}}\n`,
+                    footerPartial: `\n`,
+                    groupBy: null,
+                    commitGroupsSort: null,
+                    commitsSort: null,
+                    noteGroupsSort: null,
+                    notesSort: null,
                 },
             },
         ],
+
         [
             "semantic-release-replace-plugin",
             {
@@ -149,6 +154,31 @@ module.exports = {
                     }
                 ]
             }
+        ],
+        [
+            '@semantic-release/changelog',
+            {
+                changelogFile: 'changelog.txt',
+                changelogTitle: '',
+                writerOpts: {
+                    headerPartial: `*** Cryptocurrency Payment Gateway Match2Pay for WooCommerce Changelog ***\n\n`,
+                    mainTemplate: `{{#each releases}}
+
+YYYY-MM-DD - version {{version}}
+{{#each commits}}
+{{> commit}}
+{{/each}}
+{{/each}}, commitPartial: {{type}}: {{message}}\n`,
+                    transform: (commit, context) => {
+                        if (commit.type === 'feat') {
+                            commit.type = '* Added';
+                        } else if (commit.type === 'fix') {
+                            commit.type = '* Fixed';
+                        }
+                        return commit;
+                    },
+                },
+            },
         ],
         [
             "@semantic-release/changelog",
