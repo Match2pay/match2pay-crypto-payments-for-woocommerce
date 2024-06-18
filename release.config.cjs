@@ -51,13 +51,12 @@ module.exports = {
             {
                 preset: 'angular',
                 writerOpts: {
+                    debug: () => console.log,
                     commitPartial: `{{type}}: {{message}}\n`,
                     headerPartial: `## {{#if isPatch~}} <small>
 {{~#if date}} {{date}}
 {{~/if~}}
 {{~/if~}} - version {{version}}
-{{~#if title}} "{{title}}"
-{{~/if~}}
 {{~#if isPatch~}} </small>
 {{~/if}}`,
                     mainTemplate: `{{> header}}
@@ -70,11 +69,46 @@ module.exports = {
 
 {{> footer}}`,
                     transform: (commit, context) => {
-                        if (commit.type === 'feat') {
-                            commit.type = '* Added';
-                        } else if (commit.type === 'fix') {
-                            commit.type = '* Fixed';
+                        let type = '';
+                        switch (commit.type) {
+                            case 'feat':
+                                type = '* Added';
+                                break;
+                            case 'fix':
+                                type = '* Fixed';
+                                break;
+                            case 'docs':
+                                type = '* Documentation';
+                                break;
+                            case 'style':
+                                type = '* Styles';
+                                break;
+                            case 'refactor':
+                                type = '* Refactored';
+                                break;
+                            case 'perf':
+                                type = '* Performance';
+                                break;
+                            case 'test':
+                                type = '* Tests';
+                                break;
+                            case 'build':
+                                type = '* Build';
+                                break;
+                            case 'ci':
+                                type = '* CI';
+                                break;
+                            case 'chore':
+                                type = '* Chores';
+                                break;
+                            case 'revert':
+                                type = '* Reverted';
+                                break;
+                            default:
+                                type = '* Other';
+                                break;
                         }
+                        commit.type = type;
                         return commit;
                     },
                 },
