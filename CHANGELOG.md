@@ -1,5 +1,3 @@
-## [1.1.1](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/compare/v1.1.0...v1.1.1) (2024-03-19)
-
 ### Bug Fixes
 
 * add setting for debug & set enabled by default ([926b33c](https://github.com/Match2pay/match2pay-crypto-payments-for-woocommerce/commit/926b33c4631652c2b66b77e4a3e6ba03ff633f79))

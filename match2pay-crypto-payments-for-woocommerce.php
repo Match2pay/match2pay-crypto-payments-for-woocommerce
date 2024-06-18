@@ -7,7 +7,6 @@
  * Author URI:
  * Text Domain: wc-match2pay-crypto-payment
  * Version: 1.2.0-beta.2
- * Version: 1.1.1
  * Requires at least: 5.5
  * Tested up to: 6.4.2
  *
@@ -28,7 +27,7 @@ define( 'WC_MATCH2PAY_VERSION', '1.2.0-beta.2' );
 define( 'WC_MATCH2PAY_UPDATER_URL', 'https://raw.githubusercontent.com/Match2pay/match2pay-crypto-payments-for-woocommerce/beta/updater/beta.json' );
 
 final class WC_Match2Pay_Crypto_Payment {
-	public const version = WC_MATCH2PAY_VERSION;
+	public const VERSION = WC_MATCH2PAY_VERSION;
 
 	private function __construct() {
 		$plugin_path = trailingslashit( WP_PLUGIN_DIR ) . 'woocommerce/woocommerce.php';
@@ -38,14 +37,13 @@ final class WC_Match2Pay_Crypto_Payment {
 			$this->define_constants();
 			$this->check_older_version();
 
-			register_activation_hook( __FILE__, [ $this, 'activate' ] );
-			add_action( 'plugins_loaded', [ $this, 'init_plugin' ] );
+			register_activation_hook( __FILE__, array( $this, 'activate' ) );
+			add_action( 'plugins_loaded', array( $this, 'init_plugin' ) );
 		}
-
 	}
 
 	private function define_constants(): void {
-		define( 'MATCH2PAY_ID', "match2pay" );
+		define( 'MATCH2PAY_ID', 'match2pay' );
 		define( 'WC_MATCH2PAY_DEV_MODE', false );
 		define( 'WC_MATCH2PAY_FILE', __FILE__ );
 		define( 'WC_MATCH2PAY_PATH', __DIR__ );
@@ -68,70 +66,81 @@ final class WC_Match2Pay_Crypto_Payment {
 	}
 
 	public function init_plugin(): void {
-        $this->appsero_init_tracker_match2pay_crypto_payments_for_woocommerce();
+		$this->appsero_init_tracker_match2pay_crypto_payments_for_woocommerce();
 
-        new \Match2Pay\Updater();
+		new \Match2Pay\Updater();
 		new \Match2Pay\Assets();
 		new \Match2Pay\Match2Pay_Hooks();
-		add_action( 'init', [ $this, 'register_order_status' ] );
-		add_filter( 'woocommerce_payment_gateways', [ $this, 'match2pay_wc_add_gateway_class' ] );
-		add_filter( 'wc_order_statuses', [ $this, 'add_order_statuses' ] );
-		add_filter( 'woocommerce_valid_order_statuses_for_payment_complete', [
-			$this,
-			'add_woocommerce_valid_order_statuses_for_payment_complete'
-		], 10, 2 );
-		add_filter( 'woocommerce_valid_order_statuses_for_payment', [
-			$this,
-			'woocommerce_valid_order_statuses_for_payment'
-		], 10, 2 );
-        add_action( 'woocommerce_blocks_loaded', [$this, 'register_block_payment_method'] );
-        add_action('before_woocommerce_init', [$this, 'declare_cart_checkout_blocks_compatibility']);
-
-
-
+		add_action( 'init', array( $this, 'register_order_status' ) );
+		add_filter( 'woocommerce_payment_gateways', array( $this, 'match2pay_wc_add_gateway_class' ) );
+		add_filter( 'wc_order_statuses', array( $this, 'add_order_statuses' ) );
+		add_filter(
+			'woocommerce_valid_order_statuses_for_payment_complete',
+			array(
+				$this,
+				'add_woocommerce_valid_order_statuses_for_payment_complete',
+			),
+			10,
+			2
+		);
+		add_filter(
+			'woocommerce_valid_order_statuses_for_payment',
+			array(
+				$this,
+				'woocommerce_valid_order_statuses_for_payment',
+			),
+			10,
+			2
+		);
+		add_action( 'woocommerce_blocks_loaded', array( $this, 'register_block_payment_method' ) );
+		add_action( 'before_woocommerce_init', array( $this, 'declare_cart_checkout_blocks_compatibility' ) );
 	}
 
 
-    public function register_block_payment_method() {
-        if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
-            return;
-        }
+	public function register_block_payment_method() {
+		if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+			return;
+		}
 
-        add_action(
-            'woocommerce_blocks_payment_method_type_registration',
-            function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
-                $payment_method_registry->register( new \Match2Pay\Block() );
-            }
-        );
-    }
+		add_action(
+			'woocommerce_blocks_payment_method_type_registration',
+			function ( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+				$payment_method_registry->register( new \Match2Pay\Block() );
+			}
+		);
+	}
 
-    public function declare_cart_checkout_blocks_compatibility() {
-        if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
-            \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('cart_checkout_blocks', __FILE__);
-        }
-    }
+	public function declare_cart_checkout_blocks_compatibility() {
+		if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', __FILE__ );
+		}
+	}
 
-    public function appsero_init_tracker_match2pay_crypto_payments_for_woocommerce() {
+	public function appsero_init_tracker_match2pay_crypto_payments_for_woocommerce() {
 
-        if ( ! class_exists( 'Appsero\Client' ) ) {
-            require_once __DIR__ . '/appsero/src/Client.php';
-        }
+		if ( ! class_exists( 'Appsero\Client' ) ) {
+			require_once __DIR__ . '/appsero/src/Client.php';
+		}
 
-        $client = new Appsero\Client( 'd3bb3482-1c28-4a43-9115-6f12d18e682d', 'Match2pay crypto payments for WooCommerce', __FILE__ );
+		$client = new Appsero\Client( 'd3bb3482-1c28-4a43-9115-6f12d18e682d', 'Match2pay crypto payments for WooCommerce', __FILE__ );
 
-        // Active insights
-        $client->insights()->init();
-    }
+		// Active insights
+		$client->insights()->init();
+	}
 
-    public function register_order_status() {
-		register_post_status( 'wc-partially-paid', array(
-			'label'                     => 'Partially Paid',
-			'public'                    => true,
-			'exclude_from_search'       => false,
-			'show_in_admin_all_list'    => true,
-			'show_in_admin_status_list' => true,
-			'label_count'               => _n_noop( 'Partially Paid (%s)', 'Partially Paid (%s)' )
-		) );
+	public function register_order_status() {
+		register_post_status(
+			'wc-partially-paid',
+			array(
+				'label'                     => 'Partially Paid',
+				'public'                    => true,
+				'exclude_from_search'       => false,
+				'show_in_admin_all_list'    => true,
+				'show_in_admin_status_list' => true,
+				// Translators: %s is the number of partially paid items.
+				'label_count'               => _n_noop( 'Partially Paid (%s)', 'Partially Paid (%s)' ),
+			)
+		);
 	}
 
 	public function add_order_statuses( $order_statuses ) {
@@ -159,13 +168,13 @@ final class WC_Match2Pay_Crypto_Payment {
 	}
 
 	public function activate() {
-		$checkWC = in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) );
+		// $checkWC = in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) );
 
-		if ( ! $checkWC ) {
-
-		} else {
-
-		}
+		// if ( ! $checkWC ) {
+		//
+		// } else {
+		//
+		// }
 	}
 }
 

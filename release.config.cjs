@@ -27,25 +27,92 @@ module.exports = {
                 }
             }
         ],
+        // [
+        //     "@semantic-release/release-notes-generator",
+        //     {
+        //         "preset": "angular",
+        //         "parserOpts": {
+        //             "noteKeywords": [
+        //                 "BREAKING CHANGE",
+        //                 "BREAKING CHANGES",
+        //                 "BREAKING"
+        //             ]
+        //         },
+        //         "writerOpts": {
+        //             "commitsSort": [
+        //                 "subject",
+        //                 "scope"
+        //             ]
+        //         }
+        //     }
+        // ],
         [
-            "@semantic-release/release-notes-generator",
+            '@semantic-release/release-notes-generator',
             {
-                "preset": "angular",
-                "parserOpts": {
-                    "noteKeywords": [
-                        "BREAKING CHANGE",
-                        "BREAKING CHANGES",
-                        "BREAKING"
-                    ]
+                preset: 'angular',
+                writerOpts: {
+                    commitPartial: `{{type}}: {{message}}\n`,
+                    headerPartial: `## {{#if isPatch~}} <small>
+{{~/if~}} {{date}} - version {{version}}
+{{~#if isPatch~}} </small>
+{{~/if}}`,
+                    mainTemplate: `{{> header}}
+
+{{#each commitGroups}}
+{{#each commits}}
+{{> commit root=@root}}
+{{/each}}
+{{/each}}
+
+{{> footer}}`,
+                    transform: (commit, context) => {
+                        let type = '';
+                        switch (commit.type) {
+                            case 'feat':
+                                type = '* Added';
+                                break;
+                            case 'fix':
+                                type = '* Fixed';
+                                break;
+                            case 'docs':
+                                type = '* Documentation';
+                                break;
+                            case 'style':
+                                type = '* Styles';
+                                break;
+                            case 'refactor':
+                                type = '* Refactored';
+                                break;
+                            case 'perf':
+                                type = '* Performance';
+                                break;
+                            case 'test':
+                                type = '* Tests';
+                                break;
+                            case 'build':
+                                type = '* Build';
+                                break;
+                            case 'ci':
+                                type = '* CI';
+                                break;
+                            case 'chore':
+                                type = '* Chores';
+                                break;
+                            case 'revert':
+                                type = '* Reverted';
+                                break;
+                            default:
+                                type = '* Other';
+                                break;
+                        }
+                        commit.type = type;
+                        return commit;
+                    },
                 },
-                "writerOpts": {
-                    "commitsSort": [
-                        "subject",
-                        "scope"
-                    ]
-                }
-            }
+
+            },
         ],
+
         [
             "semantic-release-replace-plugin",
             {
@@ -96,10 +163,11 @@ module.exports = {
             }
         ],
         [
-            "@semantic-release/changelog",
+            '@semantic-release/changelog',
             {
-                "changelogFile": "CHANGELOG.md"
-            }
+                changelogFile: 'changelog.txt',
+                changelogTitle: '*** Cryptocurrency Payment Gateway Match2Pay for WooCommerce Changelog ***\n\n',
+            },
         ],
         [
             "@semantic-release/exec",
@@ -113,7 +181,6 @@ module.exports = {
                 "assets": [
                     "match2pay-crypto-payments-for-woocommerce.php",
                     "package.json",
-                    "CHANGELOG.md",
                     "updater/main.json",
                     "updater/beta.json",
                     "updater/next.json",
@@ -127,6 +194,12 @@ module.exports = {
             "@semantic-release/exec",
             {
                 "prepareCmd": "npm run plugin-zip"
+            }
+        ],
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "bash scripts/zip-format.bash"
             }
         ],
         [

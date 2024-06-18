@@ -4,12 +4,14 @@ import { addressToPrefixedAddress } from '../utils/address';
 import { QrCode } from '../components/QrCode';
 import { Button } from '../components/Button';
 import { useInterval, useMount } from 'ahooks';
+import { logger } from "../utils/logger";
 
 const { __ } = window.wp.i18n;
 const { decodeEntities } = window.wp.htmlEntities;
 const { registerPaymentMethod } = window.wc.wcBlocksRegistry;
 
 const settings = window.wc.wcSettings.getSetting( 'wc-match2pay_data', {} );
+
 
 const currencies = Object.entries( settings.currencies ).map(
 	( [ code, currency ] ) => {
@@ -50,7 +52,7 @@ const ajax_action = function ( url, _method, _data, sendJSON = true ) {
 						const data = JSON.parse( xmlhttp.responseText );
 						resolve( data );
 					} catch ( err ) {
-						console.warn(
+						logger.warn(
 							err.message + ' in ' + xmlhttp.responseText,
 							err
 						);
@@ -86,7 +88,7 @@ const getPaymentFormData = async ( data ) => {
 	);
 
 	if ( ! url ) {
-		console.warn( 'missing ajax url for payment form data request' );
+		logger.warn( 'missing ajax url for payment form data request' );
 		return;
 	}
 
@@ -146,9 +148,7 @@ const WatcherWidget = ( props ) => {
 			);
 
 			if ( result.success === false ) {
-				console.log(
-					'error occured when requesting payment form data'
-				);
+				logger.log( 'error occured when requesting payment form data' );
 			}
 
 			const data = result.data;
@@ -167,8 +167,8 @@ const WatcherWidget = ( props ) => {
 				// match2pay_submitForm();
 			}
 		} catch ( e ) {
-			console.error( e );
-			console.trace( e );
+			logger.error( e );
+			logger.trace( e );
 		}
 	};
 
@@ -203,9 +203,9 @@ const Widget = ( props ) => {
 	const { onPaymentSetup } = eventRegistration;
 
 	// setSelectedCurrency("ETH")
-	// console.log(settings)
+	// logger.log(settings)
 	const reInitialize = async () => {
-		console.log( 'reInitialize', loading );
+		logger.log( 'reInitialize', loading );
 		if ( ! loading ) {
 			if ( settings.paymentId ) {
 				setPaymentId( settings.paymentId );
@@ -220,7 +220,7 @@ const Widget = ( props ) => {
 		setLoading( true );
 	};
 
-	// console.log('settings.paymentId',settings.paymentId)
+	// logger.log('settings.paymentId',settings.paymentId)
 
 	useEffect( () => {
 		let unsubscribe;
@@ -242,7 +242,7 @@ const Widget = ( props ) => {
 						'shipping_'
 					),
 				};
-				if (order_id) {
+				if ( order_id ) {
 					formData.order_id = order_id;
 				}
 				return formData;
@@ -305,35 +305,35 @@ const Widget = ( props ) => {
 						'shipping_'
 					),
 				};
-				if (order_id) {
+				if ( order_id ) {
 					formData.order_id = order_id;
 				}
 				return formData;
 			};
 			const formData = getFormData();
 			if ( ! formData.currency ) {
-				console.error( 'currency is required' );
+				logger.error( 'currency is required' );
 				return;
 			}
-			console.log( 'getFormData', formData );
+			logger.log( 'getFormData', formData );
 			try {
 				const result = await getPaymentFormData( formData );
-				console.log( 'result', result );
+				logger.log( 'result', result );
 				const { data, success } = result;
 				if ( ! success ) {
 					//TODO: show error message
-					console.error(
+					logger.error(
 						'error occured when requesting payment form data'
 					);
 					return;
 				}
-				console.log( 'result data', data );
+				logger.log( 'result data', data );
 				const { payment_form_data } = data;
 				setOrderId( data.order_id );
 				setPaymentId( payment_form_data.paymentId );
 			} catch ( e ) {
-				console.error( e );
-				console.trace( e );
+				logger.error( e );
+				logger.trace( e );
 			}
 			return false;
 		},
