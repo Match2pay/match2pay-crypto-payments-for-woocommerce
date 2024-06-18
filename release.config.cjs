@@ -50,59 +50,6 @@ module.exports = {
             '@semantic-release/release-notes-generator',
             {
                 preset: 'angular',
-                writerOpts: {
-                    transform: (commit, context) => {
-                        let type = '';
-                        switch (commit.type) {
-                            case 'feat':
-                                type = '* Added';
-                                break;
-                            case 'fix':
-                                type = '* Fixed';
-                                break;
-                            case 'docs':
-                                type = '* Documentation';
-                                break;
-                            case 'style':
-                                type = '* Styles';
-                                break;
-                            case 'refactor':
-                                type = '* Refactored';
-                                break;
-                            case 'perf':
-                                type = '* Performance';
-                                break;
-                            case 'test':
-                                type = '* Tests';
-                                break;
-                            case 'build':
-                                type = '* Build';
-                                break;
-                            case 'ci':
-                                type = '* CI';
-                                break;
-                            case 'chore':
-                                type = '* Chores';
-                                break;
-                            case 'revert':
-                                type = '* Reverted';
-                                break;
-                            default:
-                                type = '* Other';
-                                break;
-                        }
-                        commit.type = type;
-                        return commit;
-                    },
-                    headerPartial: `*** Cryptocurrency Payment Gateway Match2Pay for WooCommerce Changelog ***\n\n`,
-                    commitPartial: `{{type}}: {{message}}\n`,
-                    footerPartial: `\n`,
-                    groupBy: null,
-                    commitGroupsSort: null,
-                    commitsSort: null,
-                    noteGroupsSort: null,
-                    notesSort: null,
-                },
             },
         ],
 
@@ -161,14 +108,14 @@ module.exports = {
                 changelogFile: 'changelog.txt',
                 changelogTitle: '*** Cryptocurrency Payment Gateway Match2Pay for WooCommerce Changelog ***\n\n',
                 writerOpts: {
-                    headerPartial: `*** Cryptocurrency Payment Gateway Match2Pay for WooCommerce Changelog ***\n\n`,
-                    mainTemplate: `{{#each releases}}
-
-YYYY-MM-DD - version {{version}}
-{{#each commits}}
-{{> commit}}
-{{/each}}
-{{/each}}, commitPartial: {{type}}: {{message}}\n`,
+                    headerPartial: `## {{#if isPatch~}} <small>
+{{~#if date}} {{date}}
+{{~/if~}}
+{{~/if~}} - version {{version}}
+{{~#if title}} "{{title}}"
+{{~/if~}}
+{{~#if isPatch~}} </small>
+{{~/if}}`,
                     transform: (commit, context) => {
                         if (commit.type === 'feat') {
                             commit.type = '* Added';
@@ -186,49 +133,49 @@ YYYY-MM-DD - version {{version}}
                 "changelogFile": "changelog.txt"
             }
         ],
-        [
-            "@semantic-release/exec",
-            {
-                "prepareCmd": `npm run build:updater ${refName}`
-            }
-        ],
-        [
-            "@semantic-release/git",
-            {
-                "assets": [
-                    "match2pay-crypto-payments-for-woocommerce.php",
-                    "package.json",
-                    "updater/main.json",
-                    "updater/beta.json",
-                    "updater/next.json",
-                    "README.txt",
-                    "README.md",
-                ],
-                "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-            }
-        ],
-        [
-            "@semantic-release/exec",
-            {
-                "prepareCmd": "npm run plugin-zip"
-            }
-        ],
-        [
-            "@semantic-release/exec",
-            {
-                "prepareCmd": "bash scripts/zip-format.bash"
-            }
-        ],
-        [
-            "@semantic-release/github",
-            {
-                "assets": [
-                    {
-                        "path": "./match2pay-crypto-payments-for-woocommerce.zip",
-                        "label": "match2pay-crypto-payments-for-woocommerce.zip"
-                    }
-                ]
-            }
-        ]
+        // [
+        //     "@semantic-release/exec",
+        //     {
+        //         "prepareCmd": `npm run build:updater ${refName}`
+        //     }
+        // ],
+        // [
+        //     "@semantic-release/git",
+        //     {
+        //         "assets": [
+        //             "match2pay-crypto-payments-for-woocommerce.php",
+        //             "package.json",
+        //             "updater/main.json",
+        //             "updater/beta.json",
+        //             "updater/next.json",
+        //             "README.txt",
+        //             "README.md",
+        //         ],
+        //         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        //     }
+        // ],
+        // [
+        //     "@semantic-release/exec",
+        //     {
+        //         "prepareCmd": "npm run plugin-zip"
+        //     }
+        // ],
+        // [
+        //     "@semantic-release/exec",
+        //     {
+        //         "prepareCmd": "bash scripts/zip-format.bash"
+        //     }
+        // ],
+        // [
+        //     "@semantic-release/github",
+        //     {
+        //         "assets": [
+        //             {
+        //                 "path": "./match2pay-crypto-payments-for-woocommerce.zip",
+        //                 "label": "match2pay-crypto-payments-for-woocommerce.zip"
+        //             }
+        //         ]
+        //     }
+        // ]
     ]
 }
