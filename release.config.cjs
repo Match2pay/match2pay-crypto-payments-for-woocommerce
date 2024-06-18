@@ -133,49 +133,49 @@ module.exports = {
                 "changelogFile": "changelog.txt"
             }
         ],
-        // [
-        //     "@semantic-release/exec",
-        //     {
-        //         "prepareCmd": `npm run build:updater ${refName}`
-        //     }
-        // ],
-        // [
-        //     "@semantic-release/git",
-        //     {
-        //         "assets": [
-        //             "match2pay-crypto-payments-for-woocommerce.php",
-        //             "package.json",
-        //             "updater/main.json",
-        //             "updater/beta.json",
-        //             "updater/next.json",
-        //             "README.txt",
-        //             "README.md",
-        //         ],
-        //         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-        //     }
-        // ],
-        // [
-        //     "@semantic-release/exec",
-        //     {
-        //         "prepareCmd": "npm run plugin-zip"
-        //     }
-        // ],
-        // [
-        //     "@semantic-release/exec",
-        //     {
-        //         "prepareCmd": "bash scripts/zip-format.bash"
-        //     }
-        // ],
-        // [
-        //     "@semantic-release/github",
-        //     {
-        //         "assets": [
-        //             {
-        //                 "path": "./match2pay-crypto-payments-for-woocommerce.zip",
-        //                 "label": "match2pay-crypto-payments-for-woocommerce.zip"
-        //             }
-        //         ]
-        //     }
-        // ]
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": `npm run build:updater ${refName}`
+            }
+        ],
+        [
+            "@semantic-release/git",
+            {
+                "assets": [
+                    "match2pay-crypto-payments-for-woocommerce.php",
+                    "package.json",
+                    "updater/main.json",
+                    "updater/beta.json",
+                    "updater/next.json",
+                    "README.txt",
+                    "README.md",
+                ],
+                "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+            }
+        ],
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "npm run plugin-zip"
+            }
+        ],
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "bash scripts/zip-format.bash"
+            }
+        ],
+        [
+            "@semantic-release/github",
+            {
+                "assets": [
+                    {
+                        "path": "./match2pay-crypto-payments-for-woocommerce.zip",
+                        "label": "match2pay-crypto-payments-for-woocommerce.zip"
+                    }
+                ]
+            }
+        ]
     ]
 }
