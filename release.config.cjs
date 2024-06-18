@@ -108,6 +108,7 @@ module.exports = {
                 changelogFile: 'changelog.txt',
                 changelogTitle: '*** Cryptocurrency Payment Gateway Match2Pay for WooCommerce Changelog ***\n\n',
                 writerOpts: {
+                    commitPartial: `{{type}}: {{message}}\n`,
                     headerPartial: `## {{#if isPatch~}} <small>
 {{~#if date}} {{date}}
 {{~/if~}}
@@ -116,6 +117,13 @@ module.exports = {
 {{~/if~}}
 {{~#if isPatch~}} </small>
 {{~/if}}`,
+                    mainTemplate: `{{#each releases}}
+
+{{date}} - version {{version}}
+{{#each commits}}
+{{> commit}}
+{{/each}}
+{{/each}}`,
                     transform: (commit, context) => {
                         if (commit.type === 'feat') {
                             commit.type = '* Added';
@@ -126,12 +134,6 @@ module.exports = {
                     },
                 },
             },
-        ],
-        [
-            "@semantic-release/changelog",
-            {
-                "changelogFile": "changelog.txt"
-            }
         ],
         [
             "@semantic-release/exec",
