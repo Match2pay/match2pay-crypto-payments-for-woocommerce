@@ -51,12 +51,9 @@ module.exports = {
             {
                 preset: 'angular',
                 writerOpts: {
-                    debug: () => console.log,
                     commitPartial: `{{type}}: {{message}}\n`,
                     headerPartial: `## {{#if isPatch~}} <small>
-{{~#if date}} {{date}}
-{{~/if~}}
-{{~/if~}} - version {{version}}
+{{~/if~}} {{date}} - version {{version}}
 {{~#if isPatch~}} </small>
 {{~/if}}`,
                     mainTemplate: `{{> header}}
